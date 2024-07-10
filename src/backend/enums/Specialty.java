@@ -1,4 +1,4 @@
-package Enum;
+package backend.enums;
 
 public enum Specialty {
     INTERNAL_MEDICINE,

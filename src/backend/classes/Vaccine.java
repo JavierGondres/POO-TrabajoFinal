@@ -1,4 +1,4 @@
-package classes;
+package backend.classes;
 
 public class Vaccine {
     private String id;

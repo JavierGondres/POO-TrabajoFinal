@@ -1,4 +1,4 @@
-package classes;
+package backend.classes;
 
 import java.util.ArrayList;
 import java.util.Date;

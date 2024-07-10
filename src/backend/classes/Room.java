@@ -1,17 +1,17 @@
-package classes;
+package backend.classes;
 
 import java.util.Date;
 
 public class Room {
     private String id;
-    private String patirntID;
+    private String patientID;
     private String doctorID;
     private boolean available;
     private Date date;
 
-    public Room(String id, String patirntID, String doctorID, boolean available, Date date) {
+    public Room(String id, String patientID, String doctorID, boolean available, Date date) {
         this.id = id;
-        this.patirntID = patirntID;
+        this.patientID = patientID;
         this.doctorID = doctorID;
         this.available = available;
         this.date = date;
@@ -26,11 +26,11 @@ public class Room {
     }
 
     public String getPatirntID() {
-        return patirntID;
+        return patientID;
     }
 
-    public void setPatirntID(String patirntID) {
-        this.patirntID = patirntID;
+    public void setPatirntID(String patientID) {
+        this.patientID = patientID;
     }
 
     public String getDoctorID() {

@@ -1,11 +1,12 @@
 package backend.controller;
 
-import classes.*;
+import backend.classes.*;
+import backend.classes.Record;
 
-import Enum.Genre;
-import Enum.Priority;
-import Enum.Specialty;
-import classes.Record;
+import backend.enums.AccessType;
+import backend.enums.Genre;
+import backend.enums.Priority;
+import backend.enums.Specialty;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,7 +23,7 @@ public class HospitalController {
     private Priority priority;
     private Genre genre;
     private Specialty specialty;
-    private Access access;
+    private AccessType access;
     private static HospitalController instance;
 
     public HospitalController() {
@@ -178,11 +179,11 @@ public class HospitalController {
         this.specialty = specialty;
     }
 
-    public Access getAccess() {
+    public AccessType getAccessType() {
         return access;
     }
 
-    public void setAccess(Access access) {
+    public void setAccessType(AccessType access) {
         this.access = access;
     }
 

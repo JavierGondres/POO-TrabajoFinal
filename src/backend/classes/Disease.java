@@ -1,5 +1,5 @@
-package classes;
-import Enum.Priority;
+package backend.classes;
+import backend.enums.Priority;
 
 public class Disease {
     private String id;
