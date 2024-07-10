@@ -20,4 +20,6 @@ public abstract class Employee extends User {
     }
 
     public abstract float calculateSalary();
+
+    public abstract float getDefaultSalary();
 }

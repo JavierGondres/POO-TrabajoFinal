@@ -1,6 +1,6 @@
 package backend.enums;
 
-public enum AccesType {
+public enum AccessType {
     BAJO,
     MEDIO,
     ALTO
