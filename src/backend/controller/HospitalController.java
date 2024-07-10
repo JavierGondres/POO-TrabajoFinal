@@ -213,7 +213,7 @@ public class HospitalController {
         return null;
     }
 
-    public Query findConsultationById(String id) {
+    public Query findQueryById(String id) {
         for (Query query : queries) {
             if (query.getId().equals(id)) {
                 return query;
@@ -231,14 +231,27 @@ public class HospitalController {
         return null;
     }
 
-    /*
+    public Disease findDiseaseById(String id) {
+        for (Disease disease : diseases) {
+            if (disease.getId().equals(id)) {
+                return disease;
+            }
+        }
+        return null;
+    }
+
     public void registerQuery(String patientID, String doctorID, Date date) {
         Patient patient = findPatientById(patientID);
         Employee doctor = findEmployeeById(doctorID);
 
-
         if (patient != null && doctor != null) {
-            Validar la fecha de la consulta
+            for(Query query : queries){
+                if(doctor.getQueryID().equals(query.getId()) && !query.isActive() && !(query.getPatientID().equals(patientID)) &&
+                        !(query.getDoctorID().equals(doctorID))){
+                    query = new Query("0", patientID, doctorID, 0, date, patient.getRecord(), true);
+                    queries.add(query);
+                }
+            }
         }
-    }*/
+    }
 }
