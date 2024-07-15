@@ -1,5 +1,6 @@
 package backend.classes;
 
+import backend.enums.QueryTime;
 import java.util.Date;
 
 public class Query {
@@ -8,17 +9,19 @@ public class Query {
     private String doctorID;
     private float fee;
     private Date date;
-    private Record record;
     private boolean active;
+    private QueryTime queryTime;
+    private Date endDate;
 
-    public Query(String id, String patientID, String doctorID, float fee, Date date, Record record, boolean active) {
+    public Query(String id, String patientID, String doctorID, float fee, Date date, boolean active, QueryTime queryTime, Date endDate) {
         this.id = id;
         this.patientID = patientID;
         this.doctorID = doctorID;
         this.fee = fee;
         this.date = date;
-        this.record = record;
         this.active = active;
+        this.queryTime = queryTime;
+        this.endDate = endDate;
     }
 
     public String getId() {
@@ -61,20 +64,28 @@ public class Query {
         this.date = date;
     }
 
-    public Record getRecord() {
-        return record;
-    }
-
-    public void setRecord(Record record) {
-        this.record = record;
-    }
-
     public boolean isActive() {
         return active;
     }
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public QueryTime getQueryTime() {
+        return queryTime;
+    }
+
+    public void setQueryTime(QueryTime queryTime) {
+        this.queryTime = queryTime;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public void postponeDate (Date newDate) {

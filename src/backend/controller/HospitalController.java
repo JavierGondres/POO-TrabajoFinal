@@ -2,15 +2,13 @@ package backend.controller;
 
 import backend.classes.*;
 import backend.classes.Record;
-
-import backend.enums.AccessType;
-import backend.enums.Genre;
-import backend.enums.Priority;
-import backend.enums.Specialty;
+import backend.enums.*;
+import backend.utils.IdGenerator;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class HospitalController {
     private ArrayList<Employee> employees;
@@ -36,7 +34,7 @@ public class HospitalController {
         this.diseases = new ArrayList<>();
     }
 
-    public HospitalController getInstance() {
+    public static HospitalController getInstance() {
         if (instance == null) {
             instance = new HospitalController();
         }
@@ -59,8 +57,8 @@ public class HospitalController {
         this.queries.add(query);
     }
 
-    public void addRecord(Record record) {
-        this.records.put(record.getSymptoms(), record);
+    public void addRecord(String patientId, Record record) {
+        this.records.put(patientId, record);
     }
 
     public void addVaccine(Vaccine vaccine) {
@@ -87,8 +85,8 @@ public class HospitalController {
         this.queries.remove(query);
     }
 
-    public void removeRecord(Record record) {
-        this.records.remove(record.getSymptoms());
+    public void removeRecord(String patientId) {
+        this.records.remove(patientId);
     }
 
     public void removeVaccine(Vaccine vaccine) {
@@ -241,18 +239,36 @@ public class HospitalController {
         return null;
     }
 
-    public void registerQuery(String patientID, String doctorID, Date date) {
-        Patient patient = findPatientById(patientID);
-        Employee doctor = findEmployeeById(doctorID);
+    // Función para validar las fechas de inicio y fin de una consulta {No debe chocar con el rango de una cita activa}
 
-        if (patient != null && doctor != null) {
-            for(Query query : queries){
-                if(doctor.getQueryID().equals(query.getId()) && !query.isActive() && !(query.getPatientID().equals(patientID)) &&
-                        !(query.getDoctorID().equals(doctorID))){
-                    query = new Query("0", patientID, doctorID, 0, date, patient.getRecord(), true);
-                    queries.add(query);
-                }
+    public void registerQuery(String patientID, String doctorID, Date date, float fee, QueryTime queryTime, Date endDate) {
+        Patient patient = findPatientById(patientID);
+        MedicalEmployee doctor = (MedicalEmployee) findEmployeeById(doctorID);
+
+        if (patient == null || doctor == null) {
+            return;
+        }
+
+        Map<String, Query> queryMap = new HashMap<>();
+
+        for (Query query : queries) {
+            String key = query.getPatientID() + query.getDoctorID() + query.getDate().toString();
+            queryMap.put(key, query);
+        }
+
+        String queryKey = patientID + doctorID + date.toString();
+
+        if (!queryMap.containsKey(queryKey)) {
+            Record patientRecord = records.get(patientID);
+            if (patientRecord == null) {
+                ArrayList<Disease> diseases = new ArrayList<>();
+                ArrayList<Vaccine> vaccines = new ArrayList<>();
+                patientRecord = new Record("SYMP", "DESC", diseases, diseases, vaccines, 100.0f, 100.0f, new Date());
+                records.put(patientID, patientRecord);
             }
+
+            Query newQuery = new Query(IdGenerator.generarID(), patientID, doctorID, fee, date, true, queryTime, endDate);
+            queries.add(newQuery);
         }
     }
 }

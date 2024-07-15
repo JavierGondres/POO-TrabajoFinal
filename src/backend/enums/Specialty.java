@@ -26,6 +26,6 @@ public enum Specialty {
     HEMATOLOGY,
     FAMILY_MEDICINE,
     GERIATRICS,
-    NESTHSIOLOGY,
     PATHOLOGY
 }
+
