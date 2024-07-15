@@ -2,14 +2,15 @@ package backend.classes;
 
 import backend.enums.AccessType;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class AdministrativeEmployee extends Employee {
     private AccessType accessType;
 
-    public AdministrativeEmployee(String id, String userName, String lastName, String password, Date birthday, float balance, ArrayList<Integer> workSchedule, AccessType accessType) {
-        super(id, userName, lastName, password, birthday, balance, workSchedule);
+    public AdministrativeEmployee(String id, String userName, String lastName, String password, Date birthday, float balance, LocalTime shiftStart, LocalTime shiftEnds, AccessType accessType) {
+        super(id, userName, lastName, password, birthday, balance,shiftStart, shiftEnds);
         this.accessType = accessType;
     }
 
@@ -22,12 +23,8 @@ public class AdministrativeEmployee extends Employee {
     }
 
     @Override
-    public float calculateSalary() {
-        int totalHours = 0;
-        for (int quantityOfHours : workSchedule)
-            totalHours += quantityOfHours;
-
-        return getDefaultSalary() * totalHours;
+    public float calculateSalary() { //Fix this
+        return getDefaultSalary() * calculateWorkSchedule();
     }
 
     @Override
