@@ -1,5 +1,6 @@
 package backend.classes;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -11,14 +12,16 @@ public abstract class User {
     protected String password;
     protected Date birthday;
     protected float balance;
+    protected File profilePicture;
 
-    public User(String id, String userName, String lastName, String password, Date birthday, float balance) {
+    public User(String id, String userName, String lastName, String password, Date birthday, float balance, File profilePicture) {
         this.id = id;
         this.userName = userName;
         this.lastName = lastName;
         this.password = password;
         this.birthday = birthday;
         this.balance = balance;
+        this.profilePicture = profilePicture;
     }
 
     public float getBalance() {
@@ -59,6 +62,18 @@ public abstract class User {
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public File getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(File profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public int getAge() {

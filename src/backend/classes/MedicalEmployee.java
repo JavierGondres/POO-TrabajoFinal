@@ -1,6 +1,8 @@
 package backend.classes;
 
 import backend.enums.Specialty;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.time.LocalTime;
@@ -9,8 +11,8 @@ public class MedicalEmployee extends Employee {
     private ArrayList<Specialty> specialities;
 
     public MedicalEmployee(String id, String userName, String lastName, String password, Date birthday, float balance,
-                           ArrayList<Specialty> specialities, LocalTime doctorShiftStart, LocalTime doctorShiftEnd) {
-        super(id, userName, lastName, password, birthday, balance, doctorShiftStart, doctorShiftEnd);
+                           ArrayList<Specialty> specialities, LocalTime doctorShiftStart, LocalTime doctorShiftEnd, File profilePicture) {
+        super(id, userName, lastName, password, birthday, balance, doctorShiftStart, doctorShiftEnd, profilePicture);
         this.specialities = specialities;
     }
 
