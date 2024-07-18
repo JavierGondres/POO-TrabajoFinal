@@ -21,7 +21,7 @@ public class Main {
         Room room = new Room("1", "1","1", true, new Date());
         Disease disease = new Disease("1", "Covid-19", true, ACUTE);
         AdministrativeEmployee admin = new AdministrativeEmployee("3", "Scarlet", "Abreu", "1234", new Date(), 1000,
-                LocalTime.of(8, 0), LocalTime.of(16, 0), ALTO);
+                LocalTime.of(8, 0), LocalTime.of(16, 0), ALTO, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"));
         Record record = new Record("1", "DESCRIPCION", new ArrayList<Disease>(), new ArrayList<Disease>(),
                 new ArrayList<Vaccine>(), 100, 100, new Date());
         Vaccine vaccine = new Vaccine("1", disease, 0, 100);
