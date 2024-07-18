@@ -1,5 +1,7 @@
 package backend.enums;
 
-public enum DashboardPatient {
-
+public enum DashboardPatientScreens {
+	APPOINTMENTS,
+	PROFILE,
+	SETTINGS
 }

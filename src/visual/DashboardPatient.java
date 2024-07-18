@@ -8,6 +8,7 @@ import backend.classes.Employee;
 import backend.classes.MedicalEmployee;
 import backend.classes.Query;
 import backend.controller.HospitalController;
+import backend.enums.DashboardPatientScreens;
 import backend.enums.QueryTime;
 import backend.enums.Specialty;
 import visual.components.CustomTextField;
@@ -58,11 +59,11 @@ public class DashboardPatient {
 
         ArrayList<JButton> buttons = new ArrayList<>();
         JButton citasButton = new JButton("Citas");
-        citasButton.addActionListener(e -> System.out.println("Citas clicked"));
+        citasButton.addActionListener(e -> renderScreen(DashboardPatientScreens.APPOINTMENTS));
         buttons.add(citasButton);
 
         JButton perfilButton = new JButton("Perfil");
-        perfilButton.addActionListener(e -> System.out.println("Perfil clicked"));
+        perfilButton.addActionListener(e -> renderScreen(DashboardPatientScreens.PROFILE));
         buttons.add(perfilButton);
 
         JButton ajustesButton = new JButton("Ajustes");
@@ -76,7 +77,7 @@ public class DashboardPatient {
         mainPanel = new MainPanel();
         frame.getContentPane().add(mainPanel);
 
-        renderAppointmentsScreen();
+        renderScreen(DashboardPatientScreens.APPOINTMENTS);
     }
 
     private void initializeDummyData() {
@@ -112,6 +113,19 @@ public class DashboardPatient {
         HospitalController.getInstance().addEmployee(doctor5);
         HospitalController.getInstance().addEmployee(doctor6);
         HospitalController.getInstance().addEmployee(doctor7);
+    }
+
+    private void renderScreen(DashboardPatientScreens screen) {
+        switch (screen) {
+            case APPOINTMENTS:
+                renderAppointmentsScreen();
+                break;
+            case PROFILE:
+                renderProfileScreen();
+                break;
+            default:
+                break;
+        }
     }
 
     public void renderAppointmentsScreen() {
@@ -213,6 +227,13 @@ public class DashboardPatient {
         JButton btnCreateNewQuery = new JButton("Agendar nueva cita");
         btnCreateNewQuery.setBounds(52, 651, 336, 40);
         rightPanel.add(btnCreateNewQuery);
+
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    public void renderProfileScreen() {
+        mainPanel.removeAll();
 
         frame.revalidate();
         frame.repaint();
