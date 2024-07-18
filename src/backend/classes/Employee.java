@@ -1,5 +1,6 @@
 package backend.classes;
 
+import java.io.File;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -9,8 +10,8 @@ public abstract class Employee extends User {
     protected LocalTime shiftStart;
     protected LocalTime shiftEnd;
 
-    public Employee(String id, String userName, String lastName, String password, Date birthday, float balance , LocalTime shiftStart, LocalTime shiftEnd) {
-        super(id, userName, lastName, password, birthday, balance);
+    public Employee(String id, String userName, String lastName, String password, Date birthday, float balance , LocalTime shiftStart, LocalTime shiftEnd, File profilePicture) {
+        super(id, userName, lastName, password, birthday, balance, profilePicture);
         this.shiftStart = shiftStart;
         this.shiftEnd = shiftEnd;
     }

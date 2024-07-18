@@ -269,6 +269,7 @@ public class HospitalController {
 
             Query newQuery = new Query(IdGenerator.generarID(), patientID, doctorID, fee, date, true, queryTime, endDate);
             queries.add(newQuery);
+            System.out.println("Se registró la consulta correctamente");
         }
     }
 }
