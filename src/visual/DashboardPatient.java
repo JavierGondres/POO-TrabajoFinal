@@ -47,40 +47,41 @@ public class DashboardPatient {
     }
 
 
-    	    public DashboardPatient() {
-    	        frame = new JFrame();
-    	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    	        frame.setSize(1382, 961);
-    	        frame.getContentPane().setBackground(Color.decode("#668dc0"));
-    	        frame.setLocationRelativeTo(null);
-    	        frame.getContentPane().setLayout(null);
+    public DashboardPatient() {
+        frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1382, 961);
+        frame.getContentPane().setBackground(Color.decode("#668dc0"));
+        frame.setLocationRelativeTo(null);
+        frame.getContentPane().setLayout(null);
 
-    	        initializeDummyData();
-    	        queries = HospitalController.getInstance().getConsultations();
+        initializeDummyData();
+        queries = HospitalController.getInstance().getConsultations();
 
-    	        ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
+        ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
 
-    	        JButton citasButton = new JButton("Citas");
-    	        citasButton.addActionListener(e -> renderScreen(DashboardPatientScreens.APPOINTMENTS));
-    	        buttonInfoList.add(new SliderPanel.ButtonInfo(citasButton, "/assets/images/medical-appointment.png"));
+        JButton citasButton = new JButton("Citas");
+        citasButton.addActionListener(e -> renderScreen(DashboardPatientScreens.APPOINTMENTS));
+        buttonInfoList.add(new SliderPanel.ButtonInfo(citasButton, "/assets/images/medical-appointment.png"));
 
-    	        JButton perfilButton = new JButton("Perfil");
-    	        perfilButton.addActionListener(e -> renderScreen(DashboardPatientScreens.PROFILE));
-    	        buttonInfoList.add(new SliderPanel.ButtonInfo(perfilButton, null));
+        JButton perfilButton = new JButton("Perfil");
+        perfilButton.addActionListener(e -> renderScreen(DashboardPatientScreens.PROFILE));
+        buttonInfoList.add(new SliderPanel.ButtonInfo(perfilButton, null));
 
-    	        JButton ajustesButton = new JButton("Ajustes");
-    	        ajustesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
-    	        buttonInfoList.add(new SliderPanel.ButtonInfo(ajustesButton, null));
+        JButton ajustesButton = new JButton("Ajustes");
+        ajustesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
+        buttonInfoList.add(new SliderPanel.ButtonInfo(ajustesButton, null));
 
-    	        sliderPanel = new SliderPanel("Hospital", buttonInfoList);
-    	        sliderPanel.setBounds(5, 26, 209, 883);
-    	        frame.getContentPane().add(sliderPanel);
+        sliderPanel = new SliderPanel("Hospital", buttonInfoList);
+        sliderPanel.setBounds(5, 26, 209, 883);
+        frame.getContentPane().add(sliderPanel);
 
-    	        mainPanel = new MainPanel();
-    	        frame.getContentPane().add(mainPanel);
+        mainPanel = new MainPanel();
+        frame.getContentPane().add(mainPanel);
 
-    	        renderScreen(DashboardPatientScreens.APPOINTMENTS);
-    	    }
+
+        renderScreen(DashboardPatientScreens.APPOINTMENTS);
+    }
 
     private void initializeDummyData() {
         ArrayList<Specialty> especialidades = new ArrayList<>();
