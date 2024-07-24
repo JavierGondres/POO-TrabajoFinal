@@ -1,6 +1,8 @@
 package backend.classes;
 
 import backend.enums.QueryTime;
+
+import java.time.LocalTime;
 import java.util.Date;
 
 public class Query {
@@ -11,9 +13,10 @@ public class Query {
     private Date date;
     private boolean active;
     private QueryTime queryTime;
-    private Date endDate;
+    private LocalTime startingTime;
+    private LocalTime endingTime;
 
-    public Query(String id, String patientID, String doctorID, float fee, Date date, boolean active, QueryTime queryTime, Date endDate) {
+    public Query(String id, String patientID, String doctorID, float fee, Date date, boolean active, QueryTime queryTime, LocalTime startingTime, LocalTime endingTime) {
         this.id = id;
         this.patientID = patientID;
         this.doctorID = doctorID;
@@ -21,7 +24,8 @@ public class Query {
         this.date = date;
         this.active = active;
         this.queryTime = queryTime;
-        this.endDate = endDate;
+        this.startingTime = startingTime;
+        this.endingTime = endingTime;
     }
 
     public String getId() {
@@ -80,19 +84,27 @@ public class Query {
         this.queryTime = queryTime;
     }
 
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
     public void postponeDate (Date newDate) {
         this.date = newDate;
     }
 
     public void cancelConsultation() {
         this.active = false;
+    }
+
+    public LocalTime getStartingTime() {
+        return startingTime;
+    }
+
+    public void setStartingTime(LocalTime startingTime) {
+        this.startingTime = startingTime;
+    }
+
+    public LocalTime getEndingTime() {
+        return endingTime;
+    }
+
+    public void setEndingTime(LocalTime endingTime) {
+        this.endingTime = endingTime;
     }
 }

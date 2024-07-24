@@ -32,7 +32,7 @@ public class RenderUsers extends JDialog {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                RenderUsers dialog = new RenderUsers(null, null);
+                RenderUsers dialog = new RenderUsers(UserType.MEDICAL_EMPLOYEE, null);
                 dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 dialog.setVisible(true);
             } catch (Exception e) {

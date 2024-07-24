@@ -6,18 +6,29 @@ import java.util.Date;
 
 public class Patient extends User {
 
-    private ArrayList<String> appointmentsId;
+    private float weigth;
+    private float height;
 
-    public Patient(String id, String userName, String lastName, String password, Date birthday, float balance, ArrayList<String> appointmentsId, File profilePicture) {
+    public Patient(String id, String userName, String lastName, String password, Date birthday, float balance, File profilePicture, float weigth, float height) {
         super(id, userName, lastName, password, birthday, balance, profilePicture);
-        this.appointmentsId = appointmentsId;
+        this.weigth = weigth;
+        this.height = height;
     }
 
-    public ArrayList<String> getAppointmentsId() {
-        return appointmentsId;
+
+    public float getWeigth() {
+        return weigth;
     }
 
-    public void setAppointmentsId(ArrayList<String> appointmentsId) {
-        this.appointmentsId = appointmentsId;
+    public void setWeigth(float weigth) {
+        this.weigth = weigth;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
     }
 }

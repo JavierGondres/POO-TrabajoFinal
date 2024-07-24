@@ -30,10 +30,12 @@ public class AdministrativeEmployee extends Employee {
 
     @Override
     public float getDefaultSalary() {
-        return switch (accessType) {
-            case ALTO -> 1200;
-            case MEDIO -> 750;
-            default -> 300;
-        };
+        if (accessType == AccessType.ALTO) {
+            return 1200;
+        } else if (accessType == AccessType.MEDIO) {
+            return 750;
+        } else {
+            return 300;
+        }
     }
 }

@@ -11,38 +11,25 @@ public class SliderPanel extends JPanel {
     private String title;
     private ArrayList<ButtonInfo> buttonInfoList;
     private JPanel buttonsContainer;
-    private JButton toggleButton;
-    private boolean isExpanded = true;
-    private int expandedWidth = 209;
-    private int collapsedWidth = 60;
 
     public SliderPanel(String title, ArrayList<ButtonInfo> buttonInfoList) {
         this.title = title;
         this.buttonInfoList = buttonInfoList;
         setBackground(Color.decode("#668dc0"));
         setLayout(null);  // Usar null layout para posicionar elementos manualmente
-        setBounds(5, 5, expandedWidth, 904);
+        setBounds(5, 5, 209, 904);
         generateContent();
-        
-        // Agregar listener para ajustar el botón de alternancia cuando se redimensiona el panel
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                updateToggleButtonPosition();
-            }
-        });
     }
 
     private void generateContent() {
         createTitlePanel();
         createButtonsPanel();
-        createToggleButton();
     }
 
     private void createTitlePanel() {
         JPanel titleContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         titleContainer.setOpaque(false);
-        titleContainer.setBounds(0, 0, expandedWidth, 55);
+        titleContainer.setBounds(0, 0, 209, 55);
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Tahoma", Font.BOLD, 40));
@@ -70,29 +57,8 @@ public class SliderPanel extends JPanel {
         scrollPane.setBorder(null);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setBounds(0, 55, expandedWidth, 849);
+        scrollPane.setBounds(0, 55, 209, 849);
         add(scrollPane);
-    }
-
-    private void createToggleButton() {
-        toggleButton = new JButton("◀");
-        toggleButton.setBounds(expandedWidth - 20, 452, 20, 50);  // Initial position
-        toggleButton.setFocusPainted(false);
-        toggleButton.setBorderPainted(false);
-        toggleButton.setContentAreaFilled(false);
-        toggleButton.setForeground(Color.WHITE);
-        toggleButton.addActionListener(e -> togglePanel());
-        add(toggleButton);
-    }
-
-    private void togglePanel() {
-        isExpanded = !isExpanded;
-        int newWidth = isExpanded ? expandedWidth : collapsedWidth;
-        setBounds(getX(), getY(), newWidth, getHeight());
-        toggleButton.setLocation(newWidth - 20, getHeight() / 2 - 25);  // Update position
-        toggleButton.setText(isExpanded ? "◀" : "▶");
-        revalidate();
-        repaint();
     }
 
     private JPanel createButtonWithImage(ButtonInfo buttonInfo) {
@@ -131,15 +97,6 @@ public class SliderPanel extends JPanel {
         button.setVerticalAlignment(SwingConstants.CENTER);
     }
 
-    private void updateToggleButtonPosition() {
-        int newWidth = isExpanded ? expandedWidth : collapsedWidth;
-        toggleButton.setLocation(newWidth - 20, getHeight() / 2 - 25);
-    }
-
-    public int getCurrentWidth() {
-        return isExpanded ? expandedWidth : collapsedWidth;
-    }
-    
     public static class ButtonInfo {
         private JButton button;
         private String imagePath;
