@@ -97,10 +97,6 @@ public class HospitalController {
         this.diseases.remove(disease);
     }
 
-    public ArrayList<Employee> getEmployees() {
-        return employees;
-    }
-
     public ArrayList<Patient> getPatients() {
         return patients;
     }
@@ -124,6 +120,27 @@ public class HospitalController {
     public ArrayList<Disease> getDiseases() {
         return diseases;
     }
+
+    public ArrayList<MedicalEmployee> getMedicalEmployees(){
+        ArrayList<MedicalEmployee> medicalEmployees = new ArrayList<>();
+        for(Employee employee: employees){
+            if(employee instanceof MedicalEmployee)
+                medicalEmployees.add((MedicalEmployee) employee);
+        }
+
+        return medicalEmployees;
+    }
+    
+    public ArrayList<Employee> getEmployees() {
+    	ArrayList<Employee> employeesList = new ArrayList<>();
+        for(Employee employee: employees){
+            if(employee instanceof Employee)
+            	employeesList.add((Employee) employee);
+        }
+
+        return employeesList;
+    }
+
 
     public void setEmployees(ArrayList<Employee> employees) {
         this.employees = employees;

@@ -11,6 +11,7 @@ import backend.controller.HospitalController;
 import backend.enums.DashboardPatientScreens;
 import backend.enums.QueryTime;
 import backend.enums.Specialty;
+import backend.enums.UserType;
 import visual.components.CustomTextField;
 import visual.components.MainPanel;
 import visual.components.QueryCard;
@@ -18,6 +19,8 @@ import visual.components.RoundedPanel;
 import visual.components.SliderPanel;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
@@ -75,6 +78,7 @@ public class DashboardPatient {
         sliderPanel = new SliderPanel("Hospital", buttonInfoList);
         sliderPanel.setBounds(5, 26, 209, 883);
         frame.getContentPane().add(sliderPanel);
+
 
         mainPanel = new MainPanel();
         frame.getContentPane().add(mainPanel);
@@ -229,6 +233,15 @@ public class DashboardPatient {
 
         JButton btnCreateNewQuery = new JButton("Agendar nueva cita");
         btnCreateNewQuery.setBounds(52, 651, 336, 40);
+        btnCreateNewQuery.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RenderUsers renderDoctors = new RenderUsers(UserType.MEDICAL_EMPLOYEE, selectedUser -> {
+                    System.out.println("Usuario seleccionado: " + selectedUser.getUserName());
+                });
+                renderDoctors.setModal(true);
+                renderDoctors.setVisible(true);
+            }
+        });
         rightPanel.add(btnCreateNewQuery);
 
         frame.revalidate();
