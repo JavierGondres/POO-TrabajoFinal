@@ -2,6 +2,8 @@ package visual.components;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -14,11 +16,10 @@ public class SliderPanel extends JPanel {
         this.title = title;
         this.buttonInfoList = buttonInfoList;
         setBackground(Color.decode("#668dc0"));
-        setLayout(new BorderLayout());
+        setLayout(null);  // Usar null layout para posicionar elementos manualmente
         setBounds(5, 5, 209, 904);
         generateContent();
     }
-
 
     private void generateContent() {
         createTitlePanel();
@@ -28,12 +29,12 @@ public class SliderPanel extends JPanel {
     private void createTitlePanel() {
         JPanel titleContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
         titleContainer.setOpaque(false);
-        titleContainer.setPreferredSize(new Dimension(197, 55));
+        titleContainer.setBounds(0, 0, 209, 55);
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Tahoma", Font.BOLD, 40));
         titleContainer.add(titleLabel);
-        add(titleContainer, BorderLayout.NORTH);
+        add(titleContainer);
     }
 
     private void createButtonsPanel() {
@@ -56,7 +57,8 @@ public class SliderPanel extends JPanel {
         scrollPane.setBorder(null);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setBounds(0, 55, 209, 849);
+        add(scrollPane);
     }
 
     private JPanel createButtonWithImage(ButtonInfo buttonInfo) {
@@ -94,7 +96,7 @@ public class SliderPanel extends JPanel {
         button.setHorizontalAlignment(SwingConstants.CENTER);
         button.setVerticalAlignment(SwingConstants.CENTER);
     }
-    
+
     public static class ButtonInfo {
         private JButton button;
         private String imagePath;

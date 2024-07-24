@@ -5,7 +5,9 @@ import backend.classes.Record;
 import backend.enums.*;
 import backend.utils.IdGenerator;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ public class HospitalController {
     private Genre genre;
     private Specialty specialty;
     private AccessType access;
+    private Patient currentPatient;
     private static HospitalController instance;
     private String currentUserId;
 
@@ -33,6 +36,8 @@ public class HospitalController {
         this.records = new HashMap<>();
         this.vaccines = new ArrayList<>();
         this.diseases = new ArrayList<>();
+        this.currentPatient = new Patient("999", "Javier Emilio", "Gondres", "123456", new Date(), 1000, null, 100, 160);
+        this.patients.add(currentPatient);
     }
 
     public static HospitalController getInstance() {
@@ -98,10 +103,14 @@ public class HospitalController {
         this.diseases.remove(disease);
     }
 
-    public ArrayList<Employee> getEmployees() {
-        return employees;
+    public Patient getCurrentPatient() {
+        return currentPatient;
     }
 
+    public void setCurrentPatient(Patient currentPatient) {
+        this.currentPatient = currentPatient;
+    }
+    
     public ArrayList<Patient> getPatients() {
         return patients;
     }
@@ -125,6 +134,27 @@ public class HospitalController {
     public ArrayList<Disease> getDiseases() {
         return diseases;
     }
+
+    public ArrayList<MedicalEmployee> getMedicalEmployees() {
+        ArrayList<MedicalEmployee> medicalEmployees = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee instanceof MedicalEmployee)
+                medicalEmployees.add((MedicalEmployee) employee);
+        }
+
+        return medicalEmployees;
+    }
+
+    public ArrayList<Employee> getEmployees() {
+        ArrayList<Employee> employeesList = new ArrayList<>();
+        for (Employee employee : employees) {
+            if (employee instanceof Employee)
+                employeesList.add((Employee) employee);
+        }
+
+        return employeesList;
+    }
+
 
     public void setEmployees(ArrayList<Employee> employees) {
         this.employees = employees;
@@ -185,7 +215,7 @@ public class HospitalController {
     private void setAccessType(AccessType access) {
         this.access = access;
     }
-
+    
     public Employee findEmployeeById(String id) {
         for (Employee employee : employees) {
             if (employee.getId().equals(id)) {
@@ -276,38 +306,123 @@ public class HospitalController {
         }
         return null;
     }
+    
 
-    // Función para validar las fechas de inicio y fin de una consulta {No debe chocar con el rango de una cita activa}
 
-    public void registerQuery(String patientID, String doctorID, Date date, float fee, QueryTime queryTime, Date endDate) {
-        Patient patient = findPatientById(patientID);
-        MedicalEmployee doctor = (MedicalEmployee) findEmployeeById(doctorID);
-
-        if (patient == null || doctor == null) {
-            return;
-        }
-
-        Map<String, Query> queryMap = new HashMap<>();
+    public ArrayList<Query> getMedicalEmployeeActiveQueries(String doctorId) {
+        ArrayList<Query> medicalEmployeeQueries = new ArrayList<>();
 
         for (Query query : queries) {
-            String key = query.getPatientID() + query.getDoctorID() + query.getDate().toString();
-            queryMap.put(key, query);
+            if (query.isActive() && query.getDoctorID().equals(doctorId))
+                medicalEmployeeQueries.add(query);
         }
 
-        String queryKey = patientID + doctorID + date.toString();
+        return medicalEmployeeQueries;
+    }
 
-        if (!queryMap.containsKey(queryKey)) {
-            Record patientRecord = records.get(patientID);
-            if (patientRecord == null) {
-                ArrayList<Disease> diseases = new ArrayList<>();
-                ArrayList<Vaccine> vaccines = new ArrayList<>();
-                patientRecord = new Record("SYMP", "DESC", diseases, diseases, vaccines, 100.0f, 100.0f, new Date());
-                records.put(patientID, patientRecord);
+    public ArrayList<Query> getPatientActiveQueries(String patientId) {
+        ArrayList<Query> patientQueries = new ArrayList<>();
+
+        for (Query query : queries) {
+            if (query.isActive() && query.getPatientID().equals(patientId))
+                patientQueries.add(query);
+        }
+
+        return patientQueries;
+    }
+
+    public void validateQuery(String patientID, String doctorID, Date queryDate, LocalTime startingTime, LocalTime endingTime) {
+        ArrayList<Query> patientQueries = getPatientActiveQueries(patientID);
+        ArrayList<Query> doctorQueries = getMedicalEmployeeActiveQueries(doctorID);
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(queryDate);
+        
+        for (Query query : patientQueries) {
+            cal1.setTime(query.getDate());
+            
+            boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                              cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) &&
+                              cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH);
+            
+            if (sameDay && isTimeOverlap(query.getStartingTime(), query.getEndingTime(), startingTime, endingTime)) {
+                throw new IllegalStateException("Ya tienes una cita registrada para esa fecha y hora.");
+            }
+        }
+
+        for (Query query : doctorQueries) {
+            cal1.setTime(query.getDate());
+            
+            boolean sameDay = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                              cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) &&
+                              cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH);
+            
+            if (sameDay && isTimeOverlap(query.getStartingTime(), query.getEndingTime(), startingTime, endingTime)) {
+                throw new IllegalStateException("Esta cita esta ocupada por otro paciente");
+            }
+        }
+        
+    }
+    
+    private boolean isTimeOverlap(LocalTime start1, LocalTime end1, LocalTime start2, LocalTime end2) {
+        boolean startsDuringExistingQuery = start2.isBefore(end1) && start2.isAfter(start1);
+        boolean endsDuringExistingQuery = end2.isAfter(start1) && end2.isBefore(end1);
+        boolean startsAtSameTime = start2.equals(start1);
+        boolean endsAtSameTime = end2.equals(end1);
+
+        return startsDuringExistingQuery || endsDuringExistingQuery || startsAtSameTime || endsAtSameTime;
+    }
+
+    public void createQuery(String id, String patientID, String doctorID, float fee, Date date, QueryTime queryTime, LocalTime startingTime, LocalTime endingTime) {
+        try {
+
+        	Patient patient = findPatientById(patientID);
+            MedicalEmployee doctor = (MedicalEmployee) findEmployeeById(doctorID);
+
+            if (patient == null) {
+                throw new IllegalArgumentException("Patient not found with ID: " + patientID);
             }
 
-            Query newQuery = new Query(IdGenerator.generarID(), patientID, doctorID, fee, date, true, queryTime, endDate);
-            queries.add(newQuery);
-            System.out.println("Se registró la consulta correctamente");
+            if (doctor == null) {
+                throw new IllegalArgumentException("Doctor not found with ID: " + doctorID);
+            }
+
+            validateQuery(patientID, doctorID, date, startingTime, endingTime);
+            System.out.println("AA");
+
+            Query query = new Query(id, patientID, doctorID, fee, date, true, queryTime, startingTime, endingTime);
+            queries.add(query);
+            initializePatientRecord(patient);
         }
+        catch(IllegalStateException e) {
+        	throw e;
+        }
+
+    }
+
+    public void initializePatientRecord(Patient patient) {
+        String id = patient.getId();
+        if (records.containsKey(id))
+            return;
+
+        ArrayList<Disease> diseases = new ArrayList<>();
+        ArrayList<Vaccine> vaccines = new ArrayList<>();
+        Record patientRecord = new Record(id, "", "", diseases, diseases, vaccines, patient.getWeigth(), patient.getHeight(), new Date());
+        records.put(id, patientRecord);
+
+    }
+    
+    public void updateQuery(String id, Date date, LocalTime startingTime, LocalTime endingTime) {
+        Query existingQuery = findQueryById(id);
+        
+        if (existingQuery == null) {
+            throw new IllegalArgumentException("No se encontró una cita con el ID: " + id);
+        }
+        
+        validateQuery(existingQuery.getPatientID(), existingQuery.getDoctorID(), date, startingTime, endingTime);
+
+        existingQuery.setDate(date);
+        existingQuery.setStartingTime(startingTime);
+        existingQuery.setEndingTime(endingTime);
     }
 }
