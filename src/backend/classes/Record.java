@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class Record {
+    private String patientId;
     private String symptoms;
     private String description;
     private ArrayList<Disease> suffering;
@@ -14,7 +15,8 @@ public class Record {
     private float height;
     private Date lastModification;
 
-    public Record(String symptoms, String description, ArrayList<Disease> suffering, ArrayList<Disease> DiseaseHistory, ArrayList<Vaccine> vaccines, float weight, float height, Date lastModification) {
+    public Record(String patientId, String symptoms, String description, ArrayList<Disease> suffering, ArrayList<Disease> DiseaseHistory, ArrayList<Vaccine> vaccines, float weight, float height, Date lastModification) {
+       this.patientId = patientId;
         this.symptoms = symptoms;
         this.description = description;
         this.suffering = suffering;
@@ -23,6 +25,14 @@ public class Record {
         this.weight = weight;
         this.height = height;
         this.lastModification = lastModification;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public String getSymptoms() {
@@ -129,5 +139,6 @@ public class Record {
         record.put("lastModification", this.lastModification);
         return record;
     }
+
 
 }
