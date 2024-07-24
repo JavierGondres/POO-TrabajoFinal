@@ -23,6 +23,7 @@ public class HospitalController {
     private Specialty specialty;
     private AccessType access;
     private static HospitalController instance;
+    private String currentUserId;
 
     public HospitalController() {
         this.employees = new ArrayList<>();
@@ -181,7 +182,7 @@ public class HospitalController {
         return access;
     }
 
-    public void setAccessType(AccessType access) {
+    private void setAccessType(AccessType access) {
         this.access = access;
     }
 
@@ -192,6 +193,43 @@ public class HospitalController {
             }
         }
         return null;
+    }
+    
+    public String loginUser(String username, String password) {
+    	for(Patient p: patients) {
+    		if(p.getUserName().equals(username) && p.getPassword().equals(password)) {
+    			setAccessType(AccessType.BAJO);
+    			return p.getId();
+    		}
+    	}
+    	for(Employee e: employees) {
+    		if(e.getUserName().equals(username) && e.getPassword().equals(password)) {
+    			if(e instanceof MedicalEmployee) setAccessType(AccessType.MEDIO);
+    			else setAccessType(AccessType.ALTO);
+    			return e.getId();
+    		}
+    	}
+    	return null;
+    }
+    
+    public User findUserById(String Id) {
+    	for(Patient p: patients) {
+    		if(p.getId().equals(Id)) {
+    			return p;
+    		}
+    	}
+    	for(Employee e: employees) {
+    		if(e.getId().equals(Id)) {
+    			return e;
+    		}
+    	}
+    	return null;
+    }
+    
+    
+    
+    public User getCurrentUser() {
+    	return findUserById(currentUserId);
     }
 
     public Patient findPatientById(String id) {
