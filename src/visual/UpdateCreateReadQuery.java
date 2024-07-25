@@ -44,8 +44,12 @@ public class UpdateCreateReadQuery extends JDialog {
     private JDateChooser dateChooser = new JDateChooser();
     private JComboBox rangeOfTimesComboBox = new JComboBox();
     private MedicalEmployee selectedMedicalEmployee;
+    private Patient selectedPatient; 
     private JButton okButton = new JButton("Crear");
     private JButton btnSearchDoctor = new JButton("Buscar");
+    private JLabel lblUser = new JLabel("Doctor:");
+    private JButton cancelButton = new JButton("Cancelar");
+    private UserType userTypeToRender;
     private GeneralCallback callback;
     
     /**
@@ -53,7 +57,7 @@ public class UpdateCreateReadQuery extends JDialog {
      */
     public static void main(String[] args) {
         try {
-            UpdateCreateReadQuery dialog = new UpdateCreateReadQuery(null, null);
+            UpdateCreateReadQuery dialog = new UpdateCreateReadQuery(null, null, UserType.MEDICAL_EMPLOYEE);
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
@@ -64,9 +68,10 @@ public class UpdateCreateReadQuery extends JDialog {
     /**
      * Create the dialog.
      */
-    public UpdateCreateReadQuery(Query query, GeneralCallback callback) {
+    public UpdateCreateReadQuery(Query query, GeneralCallback callback, UserType userTypeToRender) {
+    	this.userTypeToRender = userTypeToRender;
     	this.callback = callback;
-        initializeComponentWithQuery(query);
+        initializeComponentWithQuery(query, userTypeToRender);
         setBounds(100, 100, 602, 550);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBackground(Color.decode("#c0d0ef"));
@@ -101,11 +106,10 @@ public class UpdateCreateReadQuery extends JDialog {
         doctorTextField.setBounds(120, 126, 167, 22);
         contentPanel.add(doctorTextField);
 
-        JLabel lblDoctor = new JLabel("Doctor:");
-        lblDoctor.setForeground(Color.decode("#0f1c30"));
-        lblDoctor.setFont(lblId.getFont().deriveFont(Font.BOLD, 14));
-        lblDoctor.setBounds(23, 124, 85, 25);
-        contentPanel.add(lblDoctor);
+        lblUser.setForeground(Color.decode("#0f1c30"));
+        lblUser.setFont(lblId.getFont().deriveFont(Font.BOLD, 14));
+        lblUser.setBounds(23, 124, 85, 25);
+        contentPanel.add(lblUser);
 
 
         btnSearchDoctor.setBackground(Color.decode("#0f1c30"));
@@ -114,13 +118,13 @@ public class UpdateCreateReadQuery extends JDialog {
         btnSearchDoctor.setBounds(313, 125, 97, 25);
         btnSearchDoctor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                RenderUsers renderDoctors = new RenderUsers(UserType.MEDICAL_EMPLOYEE, selectedUser -> {
+                RenderUsers renderDoctors = new RenderUsers(HospitalController.getInstance().getMedicalEmployees(), UserType.MEDICAL_EMPLOYEE, selectedUser -> {
                     selectedMedicalEmployee = (MedicalEmployee) selectedUser;
                     if (selectedMedicalEmployee == null)
                         return;
                     initalizeFieldWithMedicalEmployee();
                     fillComboBoxWithAvailableTimes();
-                });
+                }, null);
                 renderDoctors.setModal(true);
                 renderDoctors.setVisible(true);
             }
@@ -178,7 +182,6 @@ public class UpdateCreateReadQuery extends JDialog {
                 getRootPane().setDefaultButton(okButton);
             }
             {
-                JButton cancelButton = new JButton("Cancelar");
                 cancelButton.setActionCommand("Cancel");
                 cancelButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -196,7 +199,7 @@ public class UpdateCreateReadQuery extends JDialog {
         rangeOfTimesComboBox.addActionListener(e -> validateFields());
 
         validateFields();
-        if(query != null)
+        if(query != null && userTypeToRender == userTypeToRender.MEDICAL_EMPLOYEE)
         	rangeOfTimesComboBox.setEnabled(true);
     }
 
@@ -214,27 +217,45 @@ public class UpdateCreateReadQuery extends JDialog {
                 rangeOfTimesComboBox.addItem(formattedTime);
             }
 
-            rangeOfTimesComboBox.setEnabled(true);
+            if(userTypeToRender == UserType.PATIENT) {
+            	rangeOfTimesComboBox.setEnabled(false);         	
+            }
+            else
+            	rangeOfTimesComboBox.setEnabled(true);
             validateFields();
         }
     }
 
-    private void initializeComponentWithQuery(Query query) {
+    private void initializeComponentWithQuery(Query query, UserType userTypeToRender) {
         if (query == null) {
             idTextField.setText(IdGenerator.generarID());
             return;
         }
-        idTextField.setText(query.getId());
+        MedicalEmployee medicalEmployee = (MedicalEmployee) HospitalController.getInstance().findEmployeeById(query.getDoctorID());
+        Patient patient = HospitalController.getInstance().findPatientById(query.getPatientID());
+        selectedPatient = patient;
+        selectedMedicalEmployee = medicalEmployee;
+        
+        if(userTypeToRender == userTypeToRender.PATIENT) {
+            okButton.setVisible(false);
+            lblUser.setText("Paciente:");
+            doctorTextField.setText(patient.getUserName());
+            dateChooser.setEnabled(false);
+            cancelButton.setText("Cerrar");
+        }
+        else if(userTypeToRender == userTypeToRender.MEDICAL_EMPLOYEE) {
+            doctorTextField.setText(medicalEmployee.getUserName());
+            rangeOfTimesComboBox.setEnabled(true);
+        }
+        
         lblTitle.setText("Mi cita");
         okButton.setText("Actualizar");
-        MedicalEmployee medicalEmployee = (MedicalEmployee) HospitalController.getInstance().findEmployeeById(query.getDoctorID());
         idTextField.setText(query.getId());
-        doctorTextField.setText(medicalEmployee.getUserName());
         precioTextField.setText(String.valueOf(query.getFee()));
         dateChooser.setDate(query.getDate());
-        selectedMedicalEmployee = medicalEmployee;
-        btnSearchDoctor.setEnabled(false);
+        btnSearchDoctor.setVisible(false);
         fillComboBoxWithAvailableTimes();
+
         
         LocalTime queryStartTime = query.getStartingTime();
         LocalTime queryEndTime = query.getEndingTime();

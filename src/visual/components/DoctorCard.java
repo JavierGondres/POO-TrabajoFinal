@@ -18,9 +18,6 @@ public class DoctorCard extends UserCard {
         labelSpecialities.setFont(labelSpecialities.getFont().deriveFont(Font.PLAIN, 16));
         labelSpecialities.setBounds(12, 238, 190, 22);
         this.add(labelSpecialities);
-        this.setPreferredSize(new Dimension(120, 322));
-        this.setMaximumSize(new Dimension(120, 322));
-        this.setMinimumSize(new Dimension(120, 322));
 
     }
     

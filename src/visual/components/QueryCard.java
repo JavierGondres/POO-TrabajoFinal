@@ -1,5 +1,4 @@
 package visual.components;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseListener;
@@ -22,21 +21,23 @@ public class QueryCard extends RoundedPanel {
         this.setHoverEnabled(true);
         this.setLayout(null);
 
-        JLabel lblDoctorQuery = new JLabel(doctorName);
-        lblDoctorQuery.setBounds(198, 23, 173, 31);
-        Font currentDoctorQueryFont = lblDoctorQuery.getFont();
-        Font newDoctorQueryFont = currentDoctorQueryFont.deriveFont(Font.BOLD, 14f);
-        lblDoctorQuery.setFont(newDoctorQueryFont);
-        this.add(lblDoctorQuery);
+        JLabel lblUserNameQuery = new JLabel(doctorName);
+        lblUserNameQuery.setBounds(170, 23, 201, 31);
+        lblUserNameQuery.setHorizontalAlignment(SwingConstants.CENTER);
+        Font newDoctorQueryFont = lblUserNameQuery.getFont().deriveFont(Font.BOLD, 14f);
+        lblUserNameQuery.setFont(newDoctorQueryFont);
+        this.add(lblUserNameQuery);
 
         JLabel lblFecha = new JLabel(date);
         lblFecha.setFont(lblFecha.getFont().deriveFont(14f));
-        lblFecha.setBounds(245, 67, 82, 31);
+        lblFecha.setBounds(170, 67, 201, 31);
+        lblFecha.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lblFecha);
 
         JLabel lblpmpm = new JLabel(time);
         lblpmpm.setFont(lblpmpm.getFont().deriveFont(14f));
-        lblpmpm.setBounds(215, 111, 134, 31);
+        lblpmpm.setBounds(170, 111, 201, 31);
+        lblpmpm.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lblpmpm);
 
         JPanel imageContainer = new JPanel() {

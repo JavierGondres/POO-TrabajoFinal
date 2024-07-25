@@ -5,6 +5,7 @@ import backend.classes.Record;
 import backend.enums.*;
 import backend.utils.IdGenerator;
 
+import java.io.File;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,6 +26,16 @@ public class HospitalController {
     private Specialty specialty;
     private AccessType access;
     private Patient currentPatient;
+
+    public MedicalEmployee getCurrentMedicalEmployee() {
+        return currentMedicalEmployee;
+    }
+
+    public void setCurrentMedicalEmployee(MedicalEmployee currentMedicalEmployee) {
+        this.currentMedicalEmployee = currentMedicalEmployee;
+    }
+
+    private MedicalEmployee currentMedicalEmployee;
     private static HospitalController instance;
 
     public HospitalController() {
@@ -36,7 +47,10 @@ public class HospitalController {
         this.vaccines = new ArrayList<>();
         this.diseases = new ArrayList<>();
         this.currentPatient = new Patient("999", "Javier Emilio", "Gondres", "123456", new Date(), 1000, null, 100, 160);
+        this.currentMedicalEmployee = new MedicalEmployee("1", "Jane", "Doe", "1234", new Date(),
+                1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"), QueryTime.THIRTY_MINUTES, 200);
         this.patients.add(currentPatient);
+        this.employees.add(currentMedicalEmployee);
     }
 
     public static HospitalController getInstance() {
@@ -154,6 +168,18 @@ public class HospitalController {
         return employeesList;
     }
 
+    public ArrayList<Patient> getPatientsFromMedicalEmployee(String doctorId){
+        ArrayList<Patient> patientsFromDoctor = new ArrayList<>();
+
+        for(Query query: queries){
+            if(query.getDoctorID().equals(doctorId)){
+                Patient patient = findPatientById(query.getPatientID());
+                patientsFromDoctor.add(patient);
+            }
+        }
+
+        return patientsFromDoctor;
+    }
 
     public void setEmployees(ArrayList<Employee> employees) {
         this.employees = employees;

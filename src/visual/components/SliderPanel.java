@@ -16,7 +16,7 @@ public class SliderPanel extends JPanel {
         this.title = title;
         this.buttonInfoList = buttonInfoList;
         setBackground(Color.decode("#668dc0"));
-        setLayout(null);  // Usar null layout para posicionar elementos manualmente
+        setLayout(null);
         setBounds(5, 5, 209, 904);
         generateContent();
     }
@@ -27,15 +27,25 @@ public class SliderPanel extends JPanel {
     }
 
     private void createTitlePanel() {
-        JPanel titleContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel titleContainer = new JPanel(new GridBagLayout());
         titleContainer.setOpaque(false);
         titleContainer.setBounds(0, 0, 209, 55);
+
         JLabel titleLabel = new JLabel(title);
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Tahoma", Font.BOLD, 40));
-        titleContainer.add(titleLabel);
+
+        titleLabel.setText("<html><div style='text-align: center; width: 200px;'>" + title + "</div></html>");
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        titleContainer.add(titleLabel, gbc);
         add(titleContainer);
     }
+
 
     private void createButtonsPanel() {
         buttonsContainer = new JPanel();
@@ -62,10 +72,10 @@ public class SliderPanel extends JPanel {
     }
 
     private JPanel createButtonWithImage(ButtonInfo buttonInfo) {
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
         
-        JPanel contentPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.setOpaque(false);
         
         if (buttonInfo.getImagePath() != null && !buttonInfo.getImagePath().isEmpty()) {
@@ -74,20 +84,20 @@ public class SliderPanel extends JPanel {
                 ImageIcon icon = new ImageIcon(imageURL);
                 Image img = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                 JLabel imageLabel = new JLabel(new ImageIcon(img));
-                contentPanel.add(imageLabel);
+                contentPanel.add(imageLabel, BorderLayout.WEST);
             }
         }
         
         styleButton(buttonInfo.getButton());
-        contentPanel.add(buttonInfo.getButton());
+        contentPanel.add(buttonInfo.getButton(), BorderLayout.CENTER);
         
-        panel.add(contentPanel);
+        panel.add(contentPanel, BorderLayout.CENTER);
         return panel;
     }
 
     private void styleButton(JButton button) {
-        button.setPreferredSize(new Dimension(100, 40));
-        button.setMaximumSize(new Dimension(150, 40));
+        button.setPreferredSize(new Dimension(150, 40));
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         button.setForeground(Color.WHITE);
         button.setBackground(new Color(102, 141, 192));
         button.setBorderPainted(false);
@@ -96,7 +106,6 @@ public class SliderPanel extends JPanel {
         button.setHorizontalAlignment(SwingConstants.CENTER);
         button.setVerticalAlignment(SwingConstants.CENTER);
     }
-
     public static class ButtonInfo {
         private JButton button;
         private String imagePath;
