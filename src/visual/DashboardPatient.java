@@ -6,11 +6,13 @@ import javax.swing.event.DocumentListener;
 
 import backend.classes.Employee;
 import backend.classes.MedicalEmployee;
+import backend.classes.Patient;
 import backend.classes.Query;
 import backend.controller.HospitalController;
 import backend.enums.DashboardPatientScreens;
 import backend.enums.QueryTime;
 import backend.enums.Specialty;
+import backend.enums.UserType;
 import visual.components.CustomTextField;
 import visual.components.MainPanel;
 import visual.components.QueryCard;
@@ -18,6 +20,8 @@ import visual.components.RoundedPanel;
 import visual.components.SliderPanel;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
@@ -33,6 +37,7 @@ public class DashboardPatient {
     private GridBagConstraints gbc = new GridBagConstraints();
     private SliderPanel sliderPanel;
     private MainPanel mainPanel;
+    private Patient currentPatient;
 
 
     public static void main(String[] args) {
@@ -48,15 +53,16 @@ public class DashboardPatient {
 
 
     public DashboardPatient() {
+    	currentPatient = HospitalController.getInstance().getCurrentPatient();
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1382, 961);
+        frame.setSize(1382, 778);
         frame.getContentPane().setBackground(Color.decode("#668dc0"));
         frame.setLocationRelativeTo(null);
         frame.getContentPane().setLayout(null);
 
         initializeDummyData();
-        queries = HospitalController.getInstance().getConsultations();
+        queries = HospitalController.getInstance().getPatientActiveQueries(currentPatient.getId());
 
         ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
 
@@ -76,9 +82,9 @@ public class DashboardPatient {
         sliderPanel.setBounds(5, 26, 209, 883);
         frame.getContentPane().add(sliderPanel);
 
+
         mainPanel = new MainPanel();
         frame.getContentPane().add(mainPanel);
-
 
         renderScreen(DashboardPatientScreens.APPOINTMENTS);
     }
@@ -86,21 +92,21 @@ public class DashboardPatient {
     private void initializeDummyData() {
         ArrayList<Specialty> especialidades = new ArrayList<>();
         especialidades.add(Specialty.EMERGENCY_MEDICINE);
-        MedicalEmployee doctor1 = new MedicalEmployee("1", "Javier1", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null);
-        MedicalEmployee doctor2 = new MedicalEmployee("2", "Javier2", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null);
-        MedicalEmployee doctor3 = new MedicalEmployee("3", "Javier3", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null);
-        MedicalEmployee doctor4 = new MedicalEmployee("4", "Javier4", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null);
-        MedicalEmployee doctor5 = new MedicalEmployee("5", "Javier5", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null);
-        MedicalEmployee doctor6 = new MedicalEmployee("6", "Javier6", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null);
-        MedicalEmployee doctor7 = new MedicalEmployee("7", "Javier7", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null);
+        MedicalEmployee doctor1 = new MedicalEmployee("1", "Javier1", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(9,0), LocalTime.of(15, 30), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor2 = new MedicalEmployee("2", "Javier2", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(12,0), LocalTime.of(15, 30), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor3 = new MedicalEmployee("3", "Javier3", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(7, 0), LocalTime.of(20,0), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor4 = new MedicalEmployee("4", "Javier4", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor5 = new MedicalEmployee("5", "Javier5", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor6 = new MedicalEmployee("6", "Javier6", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor7 = new MedicalEmployee("7", "Javier7", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
 
-        Query query1 = new Query("1", "1", "1", 100.0f, new Date(), true, QueryTime.NINETY_MINUTES, new Date());
-        Query query2 = new Query("1", "1", "2", 100.0f, new Date(), true, QueryTime.NINETY_MINUTES, new Date());
-        Query query3 = new Query("1", "1", "3", 100.0f, new Date(), true, QueryTime.NINETY_MINUTES, new Date());
-        Query query4 = new Query("1", "1", "4", 100.0f, new Date(), true, QueryTime.NINETY_MINUTES, new Date());
-        Query query5 = new Query("1", "1", "5", 100.0f, new Date(), true, QueryTime.NINETY_MINUTES, new Date());
-        Query query6 = new Query("1", "1", "6", 100.0f, new Date(), true, QueryTime.NINETY_MINUTES, new Date());
-        Query query7 = new Query("1", "1", "7", 100.0f, new Date(), true, QueryTime.NINETY_MINUTES, new Date());
+        Query query1 = new Query("1", currentPatient.getId(), "1", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
+        Query query2 = new Query("1", currentPatient.getId(), "2", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
+        Query query3 = new Query("1", currentPatient.getId(), "3", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
+        Query query4 = new Query("1", currentPatient.getId(), "4", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
+        Query query5 = new Query("1", currentPatient.getId(), "5", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
+        Query query6 = new Query("1", currentPatient.getId(), "6", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
+        Query query7 = new Query("1", currentPatient.getId(), "7", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
         HospitalController.getInstance().addConsultation(query1);
         HospitalController.getInstance().addConsultation(query2);
         HospitalController.getInstance().addConsultation(query3);
@@ -178,7 +184,7 @@ public class DashboardPatient {
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setBounds(27, 181, 602, 710);
+        scrollPane.setBounds(27, 181, 602, 541);
         mainPanel.add(scrollPane);
 
         cardPanel.setBackground(Color.WHITE);
@@ -226,13 +232,24 @@ public class DashboardPatient {
         JPanel panel = new JPanel();
         panel.setBounds(12, 164, 389, 391);
         rightPanel.add(panel);
-
         JButton btnCreateNewQuery = new JButton("Agendar nueva cita");
         btnCreateNewQuery.setBounds(52, 651, 336, 40);
+        btnCreateNewQuery.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                UpdateCreateReadQuery updateCreateReadQuery = new UpdateCreateReadQuery(null, () -> filterQueriesByDoctorName(), UserType.MEDICAL_EMPLOYEE);
+                updateCreateReadQuery.setModal(true);
+                updateCreateReadQuery.setVisible(true);
+            }
+        });
+        
         rightPanel.add(btnCreateNewQuery);
 
         frame.revalidate();
         frame.repaint();
+    }
+    
+    public interface GeneralCallback {
+        void onPressOk();
     }
 
     public void renderProfileScreen() {
@@ -269,7 +286,9 @@ public class DashboardPatient {
             queryCard.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    System.out.println("Se hizo clic en el QueryCard #" + doctor.getUserName());
+                	UpdateCreateReadQuery component = new UpdateCreateReadQuery(query, () -> filterQueriesByDoctorName(), UserType.MEDICAL_EMPLOYEE);
+                	component.setModal(true);
+                	component.setVisible(true);
                 }
             });
 
@@ -280,6 +299,8 @@ public class DashboardPatient {
         cardPanel.revalidate();
         cardPanel.repaint();
     }
+    
+
 }
 
 
