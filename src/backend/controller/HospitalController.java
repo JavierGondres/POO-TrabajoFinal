@@ -413,7 +413,7 @@ public class HospitalController {
 
         ArrayList<Disease> diseases = new ArrayList<>();
         ArrayList<Vaccine> vaccines = new ArrayList<>();
-        Record patientRecord = new Record(id, "", "", diseases, diseases, vaccines, patient.getWeigth(), patient.getHeight(), new Date());
+        Record patientRecord = new Record(id, "", "", diseases, vaccines, patient.getWeigth(), patient.getHeight(), new Date());
         records.put(id, patientRecord);
 
     }

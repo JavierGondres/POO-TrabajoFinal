@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.swing.*;
@@ -13,11 +14,14 @@ import javax.swing.table.DefaultTableModel;
 
 import backend.classes.Disease;
 import backend.classes.Patient;
+import backend.classes.Vaccine;
 import backend.controller.HospitalController;
 import backend.interfaces.GeneralCallback;
 import visual.components.CustomTextField;
 
 import com.toedter.calendar.JDateChooser;
+
+import javax.swing.table.TableModel;
 
 public class PatientRecord extends JDialog {
 
@@ -34,7 +38,10 @@ public class PatientRecord extends JDialog {
     private DefaultTableModel modeloEnfermedadesActuales;
     private Patient patient;
     private backend.classes.Record patientRecord;
-    private ArrayList<Disease> currentDiseases = new ArrayList<>();
+    private ArrayList<Disease> patientDiseases = new ArrayList<>();
+    private ArrayList<Vaccine> patientVaccines = new ArrayList<>();
+    private JTable tableVacunas;
+    private DefaultTableModel modeloVacunas;
 
     public static void main(String[] args) {
         try {
@@ -54,7 +61,7 @@ public class PatientRecord extends JDialog {
     }
 
     private void initializeComponents() {
-        setBounds(100, 100, 658, 679);
+        setBounds(100, 100, 658, 756);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBackground(Color.decode("#c0d0ef"));
         contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -83,7 +90,7 @@ public class PatientRecord extends JDialog {
         textFieldName.setBounds(109, 81, 167, 22);
         contentPanel.add(textFieldName);
         textFieldName.setColumns(10);
-        
+
         JLabel lblLastname = new JLabel("Apellidos:");
         lblLastname.setForeground(Color.decode("#0f1c30"));
         lblLastname.setFont(lblUsername.getFont().deriveFont(Font.BOLD, 14));
@@ -105,7 +112,7 @@ public class PatientRecord extends JDialog {
         textFieldPeso.setColumns(10);
         textFieldPeso.setBounds(109, 120, 167, 22);
         contentPanel.add(textFieldPeso);
-        
+
         JLabel lblAltura = new JLabel("Altura:");
         lblAltura.setForeground(Color.decode("#0f1c30"));
         lblAltura.setFont(lblAltura.getFont().deriveFont(Font.BOLD, 14));
@@ -116,25 +123,25 @@ public class PatientRecord extends JDialog {
         textFieldAltura.setColumns(10);
         textFieldAltura.setBounds(461, 118, 167, 22);
         contentPanel.add(textFieldAltura);
-         
-        JLabel lblEnfermedadesActuales = new JLabel("Enfermedades actuales:");
-        lblEnfermedadesActuales.setForeground(Color.decode("#0f1c30"));
-        lblEnfermedadesActuales.setFont(lblEnfermedadesActuales.getFont().deriveFont(Font.BOLD, 14));
-        lblEnfermedadesActuales.setBounds(12, 166, 191, 25);
-        contentPanel.add(lblEnfermedadesActuales);
-        
-        JPanel panelEnfermedadesActuales = new JPanel();
-        panelEnfermedadesActuales.setBounds(12, 198, 616, 215);
-        contentPanel.add(panelEnfermedadesActuales);
-        panelEnfermedadesActuales.setLayout(null);
-        
-        JScrollPane scrollPaneEnfermedadesActuales = new JScrollPane();
-        scrollPaneEnfermedadesActuales.setBounds(0, 0, 616, 215);
-        scrollPaneEnfermedadesActuales.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        panelEnfermedadesActuales.add(scrollPaneEnfermedadesActuales);
+
+        JLabel lblEnfermedades = new JLabel("Enfermedades:");
+        lblEnfermedades.setForeground(Color.decode("#0f1c30"));
+        lblEnfermedades.setFont(lblEnfermedades.getFont().deriveFont(Font.BOLD, 14));
+        lblEnfermedades.setBounds(12, 166, 215, 25);
+        contentPanel.add(lblEnfermedades);
+
+        JPanel panelEnfermedades = new JPanel();
+        panelEnfermedades.setBounds(12, 198, 616, 172);
+        contentPanel.add(panelEnfermedades);
+        panelEnfermedades.setLayout(null);
+
+        JScrollPane scrollPaneEnfermedades = new JScrollPane();
+        scrollPaneEnfermedades.setBounds(0, 0, 616, 172);
+        scrollPaneEnfermedades.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        panelEnfermedades.add(scrollPaneEnfermedades);
 
         modeloEnfermedadesActuales = new DefaultTableModel(
-            new String[]{"ID", "Nombre", "Es vacunable", "Prioridad"}, 0
+                new String[]{"ID", "Nombre", "Es vacunable", "Prioridad"}, 0
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -142,16 +149,46 @@ public class PatientRecord extends JDialog {
             }
         };
         tableEnfermedadesActual = new JTable(modeloEnfermedadesActuales);
-        tableEnfermedadesActual.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        scrollPaneEnfermedadesActuales.setViewportView(tableEnfermedadesActual);
+        tableEnfermedadesActual.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        scrollPaneEnfermedades.setViewportView(tableEnfermedadesActual);
+
+
+        JLabel lblVacunas = new JLabel("Vacunas:");
+        lblVacunas.setForeground(Color.decode("#0f1c30"));
+        lblVacunas.setFont(lblVacunas.getFont().deriveFont(Font.BOLD, 14));
+        lblVacunas.setBounds(12, 383, 215, 25);
+        contentPanel.add(lblVacunas);
+
+        JPanel panelVacunas = new JPanel();
+        panelVacunas.setLayout(null);
+        panelVacunas.setBounds(12, 415, 616, 172);
+        contentPanel.add(panelVacunas);
+
+        JScrollPane scrollPaneVacunas = new JScrollPane();
+        scrollPaneVacunas.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPaneVacunas.setBounds(0, 0, 616, 172);
+        panelVacunas.add(scrollPaneVacunas);
+
+        modeloVacunas = new DefaultTableModel(
+                new String[]{"ID", "Nombre", "Enfermedad", "Edad minima aplicable", "Edad maxima aplicable"}, 0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        tableVacunas = new JTable(modeloVacunas);
+        tableVacunas.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        scrollPaneVacunas.setViewportView(tableVacunas);
 
         JLabel lblFecha = new JLabel("Ultima modificacion:");
         lblFecha.setForeground(Color.decode("#0f1c30"));
         lblFecha.setFont(lblFecha.getFont().deriveFont(Font.BOLD, 14));
-        lblFecha.setBounds(12, 559, 146, 25);
+        lblFecha.setBounds(12, 605, 146, 25);
         contentPanel.add(lblFecha);
 
-        dateChooser.setBounds(170, 562, 167, 22);
+        dateChooser.setBounds(170, 608, 167, 22);
         dateChooser.setEnabled(false);
         contentPanel.add(dateChooser);
 
@@ -170,11 +207,13 @@ public class PatientRecord extends JDialog {
         textFieldLastName.setText(patient.getLastName());
         textFieldAltura.setText(String.valueOf(patient.getHeight()));
         textFieldPeso.setText(String.valueOf(patient.getWeigth()));
-        
+
         if (patientRecord != null) {
             dateChooser.setDate(patientRecord.getLastModification());
-            currentDiseases = patientRecord.getDiseaseHistory();
+            patientDiseases = new ArrayList<>(patientRecord.getDiseaseHistory());
+            patientVaccines = new ArrayList<>(patientRecord.getVaccines());
             renderCurrentDiseases();
+            renderVaccines();
         }
     }
 
@@ -186,15 +225,25 @@ public class PatientRecord extends JDialog {
 
         JButton btnEliminarEnfermedadActual = new JButton("Eliminar");
         btnEliminarEnfermedadActual.setBounds(531, 167, 97, 25);
-        contentPanel.add(btnEliminarEnfermedadActual);
         btnEliminarEnfermedadActual.addActionListener(e -> removeSelectedDisease());
+        contentPanel.add(btnEliminarEnfermedadActual);
+
+        JButton buttonAddVacuna = new JButton("Agregar");
+        buttonAddVacuna.setBounds(399, 384, 97, 25);
+        buttonAddVacuna.addActionListener(e -> openSelectVaccineDialog());
+        contentPanel.add(buttonAddVacuna);
+
+        JButton buttonDeletVacuna = new JButton("Eliminar");
+        buttonDeletVacuna.setBounds(531, 384, 97, 25);
+        buttonDeletVacuna.addActionListener(e -> removeSelectedVaccine());
+        contentPanel.add(buttonDeletVacuna);
 
         okButton.addActionListener(e -> saveRecord());
         cancelButton.addActionListener(e -> dispose());
     }
 
     private void openSelectDiseaseDialog() {
-        SelectDisease selectD = new SelectDisease(currentDiseases, new GeneralCallback() {
+        SelectDisease selectD = new SelectDisease(patientDiseases, new GeneralCallback() {
             @Override
             public void onGetObject(Object object) {
                 addSelectedDiseases(object);
@@ -210,21 +259,21 @@ public class PatientRecord extends JDialog {
             Disease disease = HospitalController.getInstance().findDiseaseById(id);
             if (disease != null) {
                 addRowCurrentDisease(disease);
-                currentDiseases.add(disease);
+                patientDiseases.add(disease);
             }
         }
     }
 
     private void removeSelectedDisease() {
-        int selectedRow = tableEnfermedadesActual.getSelectedRow();
-        if (selectedRow != -1) {
-            String diseaseId = (String) modeloEnfermedadesActuales.getValueAt(selectedRow, 0);
-            
-            // Eliminar de la tabla
-            modeloEnfermedadesActuales.removeRow(selectedRow);
-            
-            // Eliminar del ArrayList currentDiseases
-            currentDiseases.removeIf(disease -> disease.getId().equals(diseaseId));
+        int[] selectedRows = tableEnfermedadesActual.getSelectedRows();
+        if (selectedRows.length > 0) {
+            // Ordenar los índices en orden descendente para evitar problemas al eliminar
+            Arrays.sort(selectedRows);
+            for (int i = selectedRows.length - 1; i >= 0; i--) {
+                String diseaseId = (String) modeloEnfermedadesActuales.getValueAt(selectedRows[i], 0);
+                modeloEnfermedadesActuales.removeRow(selectedRows[i]);
+                patientDiseases.removeIf(disease -> disease.getId().equals(diseaseId));
+            }
         }
     }
 
@@ -237,11 +286,65 @@ public class PatientRecord extends JDialog {
 
     private void addRowCurrentDisease(Disease disease) {
         modeloEnfermedadesActuales.addRow(new Object[]{
-            disease.getId(),
-            disease.getName(),
-            disease.isVaccinable(),
-            disease.getPriority()
+                disease.getId(),
+                disease.getName(),
+                disease.isVaccinable(),
+                disease.getPriority()
         });
+    }
+
+
+    private void openSelectVaccineDialog() {
+        SelectVaccine selectV = new SelectVaccine(patientVaccines, new GeneralCallback() {
+            @Override
+            public void onGetObject(Object object) {
+            	addSelectedVaccines(object);
+            }
+        });
+        selectV.setModal(true);
+        selectV.setVisible(true);
+    }
+
+    private void renderVaccines() {
+        modeloVacunas.setRowCount(0);
+        for (Vaccine vaccine : patientRecord.getVaccines()) {
+            addRowVaccines(vaccine);
+        }
+    }
+
+    private void addRowVaccines(Vaccine vaccine) {
+        Disease disease = HospitalController.getInstance().findDiseaseById(vaccine.getDiseaseId());
+        modeloVacunas.addRow(new Object[]{
+                vaccine.getId(),
+                vaccine.getName(),
+                disease.getName(),
+                vaccine.getMinAge(),
+                vaccine.getMaxAge(),
+        });
+    }
+
+    private void addSelectedVaccines(Object object) {
+        ArrayList<String> idsOfVaccines = (ArrayList<String>) object;
+        for (String id : idsOfVaccines) {
+            Vaccine vaccine = HospitalController.getInstance().findVaccineById(id);
+            if (vaccine != null) {
+                addRowVaccines(vaccine);
+                patientVaccines.add(vaccine);
+            }
+        }
+    }
+
+    private void removeSelectedVaccine() {
+        int[] selectedRows = tableVacunas.getSelectedRows();
+        if (selectedRows.length > 0) {
+            // Ordenar los índices en orden descendente para evitar problemas al eliminar
+            Arrays.sort(selectedRows);
+            for (int i = selectedRows.length - 1; i >= 0; i--) {
+                String vaccineId = (String) modeloVacunas.getValueAt(selectedRows[i], 0);
+                modeloVacunas.removeRow(selectedRows[i]);
+                patientVaccines.removeIf(vaccine -> vaccine.getId().equals(vaccineId));
+            }
+        }
     }
 
     private void saveRecord() {
@@ -254,11 +357,24 @@ public class PatientRecord extends JDialog {
             }
         }
 
-        patientRecord.setDiseaseHistory(updatedDiseases);
-        patientRecord.setLastModification(new Date());
+        ArrayList<Vaccine> updatedVaccines = new ArrayList<>();
+        for (int i = 0; i < modeloVacunas.getRowCount(); i++) {
+            String vaccineId = (String) modeloVacunas.getValueAt(i, 0);
+            Vaccine vaccine = HospitalController.getInstance().findVaccineById(vaccineId);
+            if (vaccine != null) {
+                updatedVaccines.add(vaccine);
+            }
+        }
 
-        HospitalController.getInstance().updateRecord(patient.getId(), patientRecord);
 
+        backend.classes.Record updatedRecord = new backend.classes.Record(patientRecord);
+        updatedRecord.setDiseaseHistory(updatedDiseases);
+        updatedRecord.setVaccines(updatedVaccines);
+        updatedRecord.setLastModification(new Date());
+
+        HospitalController.getInstance().updateRecord(patient.getId(), updatedRecord);
+
+        JOptionPane.showMessageDialog(this, "Record actualizado", "", JOptionPane.INFORMATION_MESSAGE);
         dispose();
     }
 }

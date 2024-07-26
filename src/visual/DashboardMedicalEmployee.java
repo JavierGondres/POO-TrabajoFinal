@@ -188,12 +188,25 @@ public class DashboardMedicalEmployee {
         HospitalController.getInstance().addDisease(enfermedad3);
         HospitalController.getInstance().addDisease(enfermedad4);
 
+        Vaccine vaccine1 = new Vaccine("1", "vacuna1", "1", 5, 10);
+        Vaccine vaccine2 = new Vaccine("2", "vacuna2", "2", 5, 10);
+        Vaccine vaccine3 = new Vaccine("3", "vacuna3", "3", 5, 10);
+        Vaccine vaccine4 = new Vaccine("4", "vacuna4", "4", 6, 10);
+
+        HospitalController.getInstance().addVaccine(vaccine1);
+        HospitalController.getInstance().addVaccine(vaccine2);
+        HospitalController.getInstance().addVaccine(vaccine3);
+        HospitalController.getInstance().addVaccine(vaccine4);
         try {        	
         	Record record = HospitalController.getInstance().getRecord(patient1.getId());
             ArrayList<Disease> enfermedades = new ArrayList<>();
             enfermedades.add(enfermedad1);
             enfermedades.add(enfermedad2);
-            record.setDiseaseHistory(enfermedades);
+            
+            ArrayList<Vaccine> vaccines = new ArrayList<>();
+            vaccines.add(vaccine1);
+            vaccines.add(vaccine2);
+            record.setVaccines(vaccines);
             HospitalController.getInstance().updateRecord(patient1.getId(), record);
         }catch(IllegalArgumentException e) {
         	HospitalController.getInstance().initializePatientRecord(patient1);
@@ -202,6 +215,11 @@ public class DashboardMedicalEmployee {
             enfermedades.add(enfermedad1);
             enfermedades.add(enfermedad2);
             record.setDiseaseHistory(enfermedades);
+            HospitalController.getInstance().updateRecord(patient1.getId(), record);
+            ArrayList<Vaccine> vaccines = new ArrayList<>();
+            vaccines.add(vaccine1);
+            vaccines.add(vaccine2);
+            record.setVaccines(vaccines);
             HospitalController.getInstance().updateRecord(patient1.getId(), record);
         }
 

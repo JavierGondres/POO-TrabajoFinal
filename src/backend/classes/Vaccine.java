@@ -2,13 +2,15 @@ package backend.classes;
 
 public class Vaccine {
     private String id;
-    private Disease disease;
+    private String name;
+    private String diseaseId;
     private int minAge;
     private int maxAge;
 
-    public Vaccine(String id, Disease disease, int minAge, int maxAge) {
+    public Vaccine(String id, String name, String diseaseId, int minAge, int maxAge) {
         this.id = id;
-        this.disease = disease;
+        this.name = name;
+        this.diseaseId = diseaseId;
         this.minAge = minAge;
         this.maxAge = maxAge;
     }
@@ -21,12 +23,12 @@ public class Vaccine {
         this.id = id;
     }
 
-    public Disease getDisease() {
-        return disease;
+    public String getDiseaseId() {
+        return diseaseId;
     }
 
-    public void setDisease(Disease disease) {
-        this.disease = disease;
+    public void setDisease(String diseaseId) {
+        this.diseaseId = diseaseId;
     }
 
     public int getMinAge() {
@@ -43,5 +45,13 @@ public class Vaccine {
 
     public void setMaxAge(int maxAge) {
         this.maxAge = maxAge;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

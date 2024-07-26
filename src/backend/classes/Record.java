@@ -8,23 +8,32 @@ public class Record {
     private String patientId;
     private String symptoms;
     private String description;
-    private ArrayList<Disease> suffering;
     private ArrayList<Disease> DiseaseHistory;
     private ArrayList<Vaccine> vaccines;
     private float weight;
     private float height;
     private Date lastModification;
 
-    public Record(String patientId, String symptoms, String description, ArrayList<Disease> suffering, ArrayList<Disease> DiseaseHistory, ArrayList<Vaccine> vaccines, float weight, float height, Date lastModification) {
+    public Record(String patientId, String symptoms, String description, ArrayList<Disease> DiseaseHistory, ArrayList<Vaccine> vaccines, float weight, float height, Date lastModification) {
        this.patientId = patientId;
         this.symptoms = symptoms;
         this.description = description;
-        this.suffering = suffering;
         this.DiseaseHistory = DiseaseHistory;
         this.vaccines = vaccines;
         this.weight = weight;
         this.height = height;
         this.lastModification = lastModification;
+    }
+
+    public Record(Record patientRecord) {
+        this.patientId = patientRecord.patientId;
+        this.symptoms = patientRecord.symptoms;
+        this.description = patientRecord.description;
+        this.DiseaseHistory = new ArrayList<>(patientRecord.DiseaseHistory);
+        this.vaccines = new ArrayList<>(patientRecord.vaccines);
+        this.weight = patientRecord.weight;
+        this.height = patientRecord.height;
+        this.lastModification = patientRecord.lastModification;
     }
 
     public String getPatientId() {
@@ -49,14 +58,6 @@ public class Record {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public ArrayList<Disease> getSuffering() {
-        return suffering;
-    }
-
-    public void setSuffering(ArrayList<Disease> suffering) {
-        this.suffering = suffering;
     }
 
     public ArrayList<Disease> getDiseaseHistory() {
@@ -99,20 +100,12 @@ public class Record {
         this.lastModification = lastModification;
     }
 
-    public void addDisease(Disease disease) {
-        this.suffering.add(disease);
-    }
-
     public void addDiseaseHistory(Disease disease) {
         this.DiseaseHistory.add(disease);
     }
 
     public void addVaccine(Vaccine vaccine) {
         this.vaccines.add(vaccine);
-    }
-
-    public void removeDisease(Disease disease) {
-        this.suffering.remove(disease);
     }
 
     public void removeDiseaseHistory(Disease disease) {
@@ -131,7 +124,6 @@ public class Record {
         HashMap<String, Object> record = new HashMap<>();
         record.put("symptoms", this.symptoms);
         record.put("description", this.description);
-        record.put("suffering", this.suffering);
         record.put("DiseaseHistory", this.DiseaseHistory);
         record.put("vaccines", this.vaccines);
         record.put("weight", this.weight);
