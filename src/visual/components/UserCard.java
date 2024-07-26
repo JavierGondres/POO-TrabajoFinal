@@ -1,6 +1,7 @@
 package visual.components;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -70,6 +71,10 @@ public class UserCard extends RoundedPanel {
                 }
             }
         });
+        
+        this.setPreferredSize(new Dimension(120, 322));
+        this.setMaximumSize(new Dimension(120, 322));
+        this.setMinimumSize(new Dimension(120, 322));
     }
     
     protected void updateTextColor(boolean isHovering) {

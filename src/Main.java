@@ -23,9 +23,9 @@ public class Main {
         Disease disease = new Disease("1", "Covid-19", true, ACUTE);
         AdministrativeEmployee admin = new AdministrativeEmployee("3", "Scarlet", "Abreu", "1234", new Date(), 1000,
                 LocalTime.of(8, 0), LocalTime.of(16, 0), ALTO, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"));
-        Record record = new Record("1", "1", "DESCRIPCION", new ArrayList<Disease>(), new ArrayList<Disease>(),
+        Record record = new Record("1", "1", "DESCRIPCION", new ArrayList<Disease>(),
                 new ArrayList<Vaccine>(), 100, 100, new Date());
-        Vaccine vaccine = new Vaccine("1", disease, 0, 100);
+        Vaccine vaccine = new Vaccine("1", "vacuna", "1", 0, 100);
 
         HospitalController hospitalController = new HospitalController();
         hospitalController.addPatient(patient);

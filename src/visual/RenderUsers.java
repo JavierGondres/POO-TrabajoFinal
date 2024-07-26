@@ -14,6 +14,7 @@ import backend.classes.User;
 import backend.controller.HospitalController;
 import backend.enums.Specialty;
 import backend.enums.UserType;
+import backend.interfaces.CardPressedCallback;
 import backend.interfaces.UserSelectionCallback;
 import visual.components.DoctorCard;
 import visual.components.UserCard;
@@ -25,14 +26,17 @@ public class RenderUsers extends JDialog {
     private User selectedUser = null;
     private JButton okButton = new JButton("Seleccionar");
     private JButton cancelButton = new JButton("Cancelar");
-    private JLabel lblTitle = new JLabel("");
+    private JLabel lblTitle = new JLabel("Doctores");
     private JPanel cardsPanel = new JPanel(new GridLayout(0, 3, 20, 20));
     private UserSelectionCallback callback;
-    
+    private CardPressedCallback onPressedCardCallback;
+    private UserType userTypeToRender;
+
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                RenderUsers dialog = new RenderUsers(UserType.MEDICAL_EMPLOYEE, null);
+                RenderUsers dialog = new RenderUsers(null, UserType.MEDICAL_EMPLOYEE, null, null);
                 dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 dialog.setVisible(true);
             } catch (Exception e) {
@@ -41,14 +45,22 @@ public class RenderUsers extends JDialog {
         });
     }
 
-    public RenderUsers(UserType userTypeToRender, UserSelectionCallback callback) {
-    	this.callback = callback;
-        initializeDataByTypeOfUser(userTypeToRender);
+    public RenderUsers(ArrayList<? extends User> users, UserType userTypeToRender, UserSelectionCallback callback, CardPressedCallback onPressedCardCallback) {
+        this.users = new ArrayList<>(users);
+        this.callback = callback;
+        this.onPressedCardCallback = onPressedCardCallback;
+        this.userTypeToRender = userTypeToRender;
         initializeUI();
         renderCards(userTypeToRender);
     }
 
     private void initializeUI() {
+    	if(userTypeToRender == UserType.PATIENT)
+    		lblTitle.setText("Pacientes");
+    	else if(userTypeToRender == UserType.MEDICAL_EMPLOYEE)
+    		lblTitle.setText("Doctores");
+    	else 
+    		lblTitle.setText("Empleados");
         setTitle("Seleccion de " + lblTitle.getText());
         setSize(939, 712);
         setLocationRelativeTo(null);
@@ -68,6 +80,11 @@ public class RenderUsers extends JDialog {
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(panel, BorderLayout.CENTER);
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
+        
+        if(onPressedCardCallback != null) {
+        	okButton.setVisible(false);
+        	cancelButton.setText("Cerrar");
+        }
     }
 
     private JPanel createHeaderPanel() {
@@ -121,23 +138,6 @@ public class RenderUsers extends JDialog {
 
         return buttonPane;
     }
-
-    private void initializeDataByTypeOfUser(UserType userTypeToRender) {
-        switch(userTypeToRender) {
-            case PATIENT:
-                users = new ArrayList<>(HospitalController.getInstance().getPatients());
-                lblTitle.setText("Pacientes");
-                break;
-            case MEDICAL_EMPLOYEE:
-                users = new ArrayList<>(HospitalController.getInstance().getMedicalEmployees());
-                lblTitle.setText("Doctores");
-                break;
-            default:
-                users = new ArrayList<>(HospitalController.getInstance().getEmployees());
-                lblTitle.setText("Empleados administrativos");
-                break;
-        }
-    }
     
     private void renderCards(UserType userTypeToRender) {
         for (User user : users) {
@@ -145,6 +145,9 @@ public class RenderUsers extends JDialog {
             card.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
+                	if (onPressedCardCallback != null) {
+                        onPressedCardCallback.onCardPressed(user); 
+                    }
                     selectCard(card, user);
                 }
             });
