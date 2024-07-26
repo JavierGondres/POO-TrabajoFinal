@@ -31,16 +31,11 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import backend.classes.Employee;
-import backend.classes.MedicalEmployee;
-import backend.classes.Patient;
-import backend.classes.Query;
+import backend.classes.*;
+import backend.classes.Record;
 import backend.controller.HospitalController;
-import backend.enums.DashboardMedicalEmployeeScreens;
-import backend.enums.DashboardPatientScreens;
-import backend.enums.QueryTime;
-import backend.enums.Specialty;
-import backend.enums.UserType;
+import backend.enums.*;
+import backend.interfaces.GeneralCallback;
 import visual.components.CustomTextField;
 import visual.components.MainPanel;
 import visual.components.QueryCard;
@@ -49,7 +44,7 @@ import visual.components.SliderPanel;
 import visual.components.UserCardOptions;
 
 public class DashboardMedicalEmployee {
-	
+
     private JFrame frame;
     private JTextField textFieldBuscar;
     private ArrayList<Query> queries = new ArrayList<>();
@@ -59,110 +54,122 @@ public class DashboardMedicalEmployee {
     private MainPanel mainPanel;
     private MedicalEmployee currentMedicalEmployee;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					DashboardMedicalEmployee window = new DashboardMedicalEmployee();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    /**
+     * Launch the application.
+     */
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    DashboardMedicalEmployee window = new DashboardMedicalEmployee();
+                    window.frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
-	/**
-	 * Create the application.
-	 */
-	public DashboardMedicalEmployee() {
-		currentMedicalEmployee = HospitalController.getInstance().getCurrentMedicalEmployee();
-		 frame = new JFrame();
-		 frame.setResizable(false);
-	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	        frame.setSize(1382, 778);
-	        frame.getContentPane().setBackground(Color.decode("#668dc0"));
-	        frame.setLocationRelativeTo(null);
-	        frame.getContentPane().setLayout(null);
+    /**
+     * Create the application.
+     */
+    public DashboardMedicalEmployee() {
+        currentMedicalEmployee = HospitalController.getInstance().getCurrentMedicalEmployee();
+        frame = new JFrame();
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(1382, 778);
+        frame.getContentPane().setBackground(Color.decode("#668dc0"));
+        frame.setLocationRelativeTo(null);
+        frame.getContentPane().setLayout(null);
 
-	        initializeDummyData();
-	        queries = HospitalController.getInstance().getConsultations();
+        initializeDummyData();
+        queries = HospitalController.getInstance().getConsultations();
 
-	        ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
+        ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
 
-	        JButton citasButton = new JButton("Citas");
-	        citasButton.addActionListener(e -> renderScreen(DashboardMedicalEmployeeScreens.APPOINTMENTS));
-	        buttonInfoList.add(new SliderPanel.ButtonInfo(citasButton, "/assets/images/medical-appointment.png"));
+        JButton citasButton = new JButton("Citas");
+        citasButton.addActionListener(e -> renderScreen(DashboardMedicalEmployeeScreens.APPOINTMENTS));
+        buttonInfoList.add(new SliderPanel.ButtonInfo(citasButton, "/assets/images/medical-appointment.png"));
 
-	        JButton perfilButton = new JButton("Perfil");
-	        perfilButton.addActionListener(e -> renderScreen(DashboardMedicalEmployeeScreens.PROFILE));
-	        buttonInfoList.add(new SliderPanel.ButtonInfo(perfilButton, null));
+        JButton perfilButton = new JButton("Perfil");
+        perfilButton.addActionListener(e -> renderScreen(DashboardMedicalEmployeeScreens.PROFILE));
+        buttonInfoList.add(new SliderPanel.ButtonInfo(perfilButton, null));
 
-	        JButton myPatientsButton = new JButton("Mis pacientes");
-	        myPatientsButton.addActionListener(new ActionListener() {
-	        	public void actionPerformed(ActionEvent e) {
-	        		RenderUsers renderPatients = new RenderUsers(
-	        			    HospitalController.getInstance().getPatientsFromMedicalEmployee(currentMedicalEmployee.getId()),
-	        			    UserType.PATIENT,
-	        			    null,
-	        			    user ->  {
-	        			        
-	        			    	ArrayList<JButton> buttonsCard = generateUserCardOptions();
-	        			    	UserCardOptions userCardOptions = new UserCardOptions(buttonsCard);
-	        			    	userCardOptions.setModal(true);
-	        			    	userCardOptions.setVisible(true);
-	        			    }
-	        			);
-	        	    
-	        	    renderPatients.setModal(true);
-	        	    renderPatients.setVisible(true);
-	        	}
-	        });
-	        buttonInfoList.add(new SliderPanel.ButtonInfo(myPatientsButton, null));
-	        
-	        JButton ajustesButton = new JButton("Ajustes");
-	        ajustesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
-	        buttonInfoList.add(new SliderPanel.ButtonInfo(ajustesButton, null));
+        JButton myPatientsButton = new JButton("Mis pacientes");
+        myPatientsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RenderUsers renderPatients = new RenderUsers(
+                        HospitalController.getInstance().getPatientsFromMedicalEmployee(currentMedicalEmployee.getId()),
+                        UserType.PATIENT,
+                        null,
+                        user -> {
 
-	        sliderPanel = new SliderPanel("Hospital", buttonInfoList);
-	        sliderPanel.setBackground(Color.decode("#668dc0"));
-	        sliderPanel.setBounds(5, 26, 245, 704);
-	        frame.getContentPane().add(sliderPanel);
+                            ArrayList<JButton> buttonsCard = generateUserCardOptions((Patient)user);
+                            UserCardOptions userCardOptions = new UserCardOptions(buttonsCard);
+                            userCardOptions.setModal(true);
+                            userCardOptions.setVisible(true);
+                        }
+                );
+
+                renderPatients.setModal(true);
+                renderPatients.setVisible(true);
+            }
+        });
+        buttonInfoList.add(new SliderPanel.ButtonInfo(myPatientsButton, null));
+
+        JButton ajustesButton = new JButton("Ajustes");
+        ajustesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
+        buttonInfoList.add(new SliderPanel.ButtonInfo(ajustesButton, null));
+
+        sliderPanel = new SliderPanel("Hospital", buttonInfoList);
+        sliderPanel.setBackground(Color.decode("#668dc0"));
+        sliderPanel.setBounds(5, 26, 245, 704);
+        frame.getContentPane().add(sliderPanel);
 
 
-	        mainPanel = new MainPanel();
-	        frame.getContentPane().add(mainPanel);
-	        renderScreen(DashboardMedicalEmployeeScreens.APPOINTMENTS);
-	}
-	
-	private ArrayList<JButton> generateUserCardOptions() {
-		ArrayList<JButton> buttonsCard = new ArrayList<>();
+        mainPanel = new MainPanel();
+        frame.getContentPane().add(mainPanel);
+        renderScreen(DashboardMedicalEmployeeScreens.APPOINTMENTS);
+    }
+
+    private ArrayList<JButton> generateUserCardOptions(Patient patient) {
+        ArrayList<JButton> buttonsCard = new ArrayList<>();
         JButton infoButton = new JButton("Ver informacion");
-        infoButton.addActionListener(event -> System.out.println("OPa"));
+        infoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                PatientInformation patientInformation = new PatientInformation(patient);
+                patientInformation.setModal(true);
+                patientInformation.setVisible(true);
+            }
+        });
         buttonsCard.add(infoButton);
 
         JButton historialButton = new JButton("Historial");
-        historialButton.addActionListener(event -> System.out.println("OPa"));
+        historialButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                PatientRecord patientRecord = new PatientRecord(patient);
+                patientRecord.setModal(true);
+                patientRecord.setVisible(true);
+            }
+        });
         buttonsCard.add(historialButton);
-        
+
         return buttonsCard;
-	}
-	
+    }
+
     private void initializeDummyData() {
         ArrayList<Specialty> especialidades = new ArrayList<>();
         especialidades.add(Specialty.EMERGENCY_MEDICINE);
         Patient patient1 = HospitalController.getInstance().getCurrentPatient();
 
         Query query1 = new Query("1", patient1.getId(), currentMedicalEmployee.getId(), 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(9, 0), LocalTime.of(9, 30));
-        Query query2 = new Query("2", patient1.getId(), currentMedicalEmployee.getId(),  100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(9, 30), LocalTime.of(10, 0));
-        Query query3 = new Query("3", patient1.getId(), currentMedicalEmployee.getId(),  100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(10, 30));
-        Query query4 = new Query("4", patient1.getId(), currentMedicalEmployee.getId(),  100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 30), LocalTime.of(11, 0));
-        Query query5 = new Query("5", patient1.getId(), currentMedicalEmployee.getId(),  100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(11, 0), LocalTime.of(11, 30));
-        Query query6 = new Query("6", patient1.getId(), currentMedicalEmployee.getId(),  100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(11, 30), LocalTime.of(12, 0));
-        Query query7 = new Query("7", patient1.getId(), currentMedicalEmployee.getId(),  100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(12, 0), LocalTime.of(12, 30));
+        Query query2 = new Query("2", patient1.getId(), currentMedicalEmployee.getId(), 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(9, 30), LocalTime.of(10, 0));
+        Query query3 = new Query("3", patient1.getId(), currentMedicalEmployee.getId(), 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(10, 30));
+        Query query4 = new Query("4", patient1.getId(), currentMedicalEmployee.getId(), 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 30), LocalTime.of(11, 0));
+        Query query5 = new Query("5", patient1.getId(), currentMedicalEmployee.getId(), 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(11, 0), LocalTime.of(11, 30));
+        Query query6 = new Query("6", patient1.getId(), currentMedicalEmployee.getId(), 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(11, 30), LocalTime.of(12, 0));
+        Query query7 = new Query("7", patient1.getId(), currentMedicalEmployee.getId(), 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(12, 0), LocalTime.of(12, 30));
         HospitalController.getInstance().addConsultation(query1);
         HospitalController.getInstance().addConsultation(query2);
         HospitalController.getInstance().addConsultation(query3);
@@ -170,6 +177,35 @@ public class DashboardMedicalEmployee {
         HospitalController.getInstance().addConsultation(query5);
         HospitalController.getInstance().addConsultation(query6);
         HospitalController.getInstance().addConsultation(query7);
+
+        Disease enfermedad1 = new Disease("1", "enfermedad1", false, Priority.ALLERGIC);
+        Disease enfermedad2 = new Disease("2", "enfermedad2", false, Priority.ALLERGIC);
+        Disease enfermedad3 = new Disease("3", "enfermedad3", false, Priority.ALLERGIC);
+        Disease enfermedad4 = new Disease("4", "enfermedad4", false, Priority.ALLERGIC);
+
+        HospitalController.getInstance().addDisease(enfermedad1);
+        HospitalController.getInstance().addDisease(enfermedad2);
+        HospitalController.getInstance().addDisease(enfermedad3);
+        HospitalController.getInstance().addDisease(enfermedad4);
+
+        try {        	
+        	Record record = HospitalController.getInstance().getRecord(patient1.getId());
+            ArrayList<Disease> enfermedades = new ArrayList<>();
+            enfermedades.add(enfermedad1);
+            enfermedades.add(enfermedad2);
+            record.setDiseaseHistory(enfermedades);
+            HospitalController.getInstance().updateRecord(patient1.getId(), record);
+        }catch(IllegalArgumentException e) {
+        	HospitalController.getInstance().initializePatientRecord(patient1);
+        	Record record = HospitalController.getInstance().getRecord(patient1.getId());
+            ArrayList<Disease> enfermedades = new ArrayList<>();
+            enfermedades.add(enfermedad1);
+            enfermedades.add(enfermedad2);
+            record.setDiseaseHistory(enfermedades);
+            HospitalController.getInstance().updateRecord(patient1.getId(), record);
+        }
+
+
     }
 
     private void renderScreen(DashboardMedicalEmployeeScreens screen) {
@@ -213,17 +249,17 @@ public class DashboardMedicalEmployee {
         textFieldBuscar.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-            	filterQueriesByPatientName();
+                filterQueriesByPatientName();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-            	filterQueriesByPatientName();
+                filterQueriesByPatientName();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-            	filterQueriesByPatientName();
+                filterQueriesByPatientName();
             }
         });
 
@@ -284,7 +320,7 @@ public class DashboardMedicalEmployee {
         frame.revalidate();
         frame.repaint();
     }
-    
+
     public interface GeneralCallback {
         void onPressOk();
     }
@@ -319,16 +355,21 @@ public class DashboardMedicalEmployee {
             LocalTime endTime = startingTime.plusMinutes(currentMedicalEmployee.getIntervalMinutesOfQueryTime());
             String formattedTime = String.format("%s / %s", startingTime, endTime);
             Patient patient = HospitalController.getInstance().findPatientById(query.getPatientID());
-            
+
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             String formattedDate = sdf.format(query.getDate());
-            
+
             QueryCard queryCard = new QueryCard(patient.getUserName(), formattedDate, formattedTime);
             queryCard.setPreferredSize(new Dimension(450, 179));
             queryCard.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    UpdateCreateReadQuery component = new UpdateCreateReadQuery(query, () -> filterQueriesByPatientName(), UserType.PATIENT);
+                    UpdateCreateReadQuery component = new UpdateCreateReadQuery(query, new backend.interfaces.GeneralCallback() {
+                        @Override
+                        public void onPressOk() {
+                            filterQueriesByPatientName();
+                        }
+                    }, UserType.PATIENT);
                     component.setModal(true);
                     component.setVisible(true);
                 }
@@ -338,6 +379,6 @@ public class DashboardMedicalEmployee {
         cardPanel.revalidate();
         cardPanel.repaint();
     }
-    
+
 
 }

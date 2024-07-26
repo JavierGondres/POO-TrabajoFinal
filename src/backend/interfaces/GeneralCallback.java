@@ -1,5 +1,6 @@
 package backend.interfaces;
 
 public interface GeneralCallback {
-	void onPressOk();
+	default void onPressOk() {};
+	default void onGetObject(Object object) {};
 }

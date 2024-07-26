@@ -148,6 +148,24 @@ public class HospitalController {
         return diseases;
     }
 
+    public void updateRecord(String patientId, Record updatedRecord) {
+        if (!records.containsKey(patientId)) {
+            throw new IllegalArgumentException("No se encontró un registro para el paciente con ID: " + patientId);
+        }
+
+        records.put(patientId, updatedRecord);
+    }
+
+    public Record getRecord(String patientId) {
+        if (!records.containsKey(patientId)) {
+            throw new IllegalArgumentException("No se encontró un registro para el paciente con ID: " + patientId);
+        }
+
+        Record record =  records.get(patientId);
+        
+        return record;
+    }
+
     public ArrayList<MedicalEmployee> getMedicalEmployees() {
         ArrayList<MedicalEmployee> medicalEmployees = new ArrayList<>();
         for (Employee employee : employees) {
