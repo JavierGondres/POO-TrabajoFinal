@@ -15,7 +15,6 @@ import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -35,7 +34,6 @@ import backend.classes.*;
 import backend.classes.Record;
 import backend.controller.HospitalController;
 import backend.enums.*;
-import backend.interfaces.GeneralCallback;
 import visual.components.CustomTextField;
 import visual.components.MainPanel;
 import visual.components.QueryCard;
