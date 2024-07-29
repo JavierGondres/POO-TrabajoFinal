@@ -236,7 +236,12 @@ public class DashboardPatient {
         btnCreateNewQuery.setBounds(52, 651, 336, 40);
         btnCreateNewQuery.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                UpdateCreateReadQuery updateCreateReadQuery = new UpdateCreateReadQuery(null, () -> filterQueriesByDoctorName(), UserType.MEDICAL_EMPLOYEE);
+                UpdateCreateReadQuery updateCreateReadQuery = new UpdateCreateReadQuery(null, new backend.interfaces.GeneralCallback() {
+                    @Override
+                    public void onPressOk() {
+                        filterQueriesByDoctorName();
+                    }
+                }, UserType.MEDICAL_EMPLOYEE);
                 updateCreateReadQuery.setModal(true);
                 updateCreateReadQuery.setVisible(true);
             }
@@ -286,7 +291,12 @@ public class DashboardPatient {
             queryCard.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                	UpdateCreateReadQuery component = new UpdateCreateReadQuery(query, () -> filterQueriesByDoctorName(), UserType.MEDICAL_EMPLOYEE);
+                	UpdateCreateReadQuery component = new UpdateCreateReadQuery(query, new backend.interfaces.GeneralCallback() {
+                        @Override
+                        public void onPressOk() {
+                            filterQueriesByDoctorName();
+                        }
+                    }, UserType.MEDICAL_EMPLOYEE);
                 	component.setModal(true);
                 	component.setVisible(true);
                 }
