@@ -11,13 +11,14 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Date;
 import java.util.Calendar;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.event.ChangeListener;
 
+import backend.classes.*;
 import backend.controller.HospitalController;
+import backend.utils.IdGenerator;
 
 import javax.swing.event.ChangeEvent;
 
@@ -318,7 +319,7 @@ public class LoginDialog extends JFrame implements AnimationCallback {
             		Animations.fadeIntoColor(BUTTON, ColorPallete.mainColor);
             	}
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            }     
+            }
             @Override
             public void mouseExited(MouseEvent e) {
             	if(!isSelected) {
@@ -336,10 +337,34 @@ public class LoginDialog extends JFrame implements AnimationCallback {
             	if(!isSelected) {
             		Animations.fadeIntoColorLabel(BUTTON_LABEL, ColorPallete.mainColor_Light);
             		Animations.fadeIntoColor(BUTTON, ColorPallete.mainColor);
+            		String Id = HospitalController.getInstance().loginUser(usernameField.getText(), new String(passwordField.getPassword()));
+            		System.out.println("User: " + usernameField.getText() + "\nPassword: " + new String(passwordField.getPassword()));
+            		if(Id != null) {
+            			if(HospitalController.getInstance().findUserById(Id) instanceof Patient) {
+            				DashboardPatient dp = new DashboardPatient();
+            				 dp.getFrame().setVisible(true);
+            				 dispose();
+            			}
+            		}
             	}
             	else {
-            		Animations.fadeIntoColorLabel(REGISTER_LABEL, ColorPallete.mainColor);
+            		Animations.fadeIntoColorLabel(BUTTON_LABEL, ColorPallete.mainColor);
             		Animations.fadeIntoColor(BUTTON, ColorPallete.mainColor_Light);
+            		Calendar c = Calendar.getInstance();
+            		c.set((int)yearSpinner.getValue(),(int)cbxMonth.getSelectedIndex(),(int)daySpinner.getValue());
+            		HospitalController.getInstance().addPatient(new Patient(IdGenerator.generarID(3), usernameField.getText(), lastnameField.getText(), new String(passwordField.getPassword()), c.getTime(), 0, null, 0, 0));
+            		
+            		String Id = HospitalController.getInstance().loginUser(usernameField.getText(), new String(passwordField.getPassword()));
+            		System.out.println("User: " + usernameField.getText() + "\nPassword: " + new String(passwordField.getPassword()));
+            		
+            		if(Id != null) {
+            			if(HospitalController.getInstance().findUserById(Id) instanceof Patient) {
+            				DashboardPatient dp = new DashboardPatient();
+            				 dp.getFrame().setVisible(true);
+            				 dispose();
+            			}
+            		}
+            		
             	}
             	setCursor(Cursor.getDefaultCursor());
 			}

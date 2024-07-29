@@ -12,6 +12,7 @@ import backend.enums.DashboardPatientScreens;
 import backend.enums.QueryTime;
 import backend.enums.Specialty;
 import backend.enums.UserType;
+import visual.components.CustomCalendar;
 import visual.components.CustomTextField;
 import visual.components.MainPanel;
 import visual.components.QueryCard;
@@ -42,7 +43,7 @@ public class DashboardPatient {
 
         try {
             DashboardPatient window = new DashboardPatient();
-            window.frame.setVisible(true);
+            window.getFrame().setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -51,14 +52,16 @@ public class DashboardPatient {
 
 
     public DashboardPatient() {
-        frame = new JFrame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1382, 778);
-        frame.getContentPane().setBackground(Color.decode("#668dc0"));
-        frame.setLocationRelativeTo(null);
-        frame.getContentPane().setLayout(null);
+        setFrame(new JFrame());
+        getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getFrame().setSize(1382, 778);
+        getFrame().getContentPane().setBackground(Color.decode("#668dc0"));
+        getFrame().setLocationRelativeTo(null);
+        getFrame().getContentPane().setLayout(null);
 
-        initializeDummyData();
+        if(HospitalController.getInstance().getCurrentUser() == null) initializeDu
+        6mmyData();
+        else System.out.print("Hola usuario");
         queries = HospitalController.getInstance().getConsultations();
 
         ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
@@ -77,11 +80,11 @@ public class DashboardPatient {
 
         sliderPanel = new SliderPanel("Hospital", buttonInfoList);
         sliderPanel.setBounds(5, 26, 209, 883);
-        frame.getContentPane().add(sliderPanel);
+        getFrame().getContentPane().add(sliderPanel);
 
 
         mainPanel = new MainPanel();
-        frame.getContentPane().add(mainPanel);
+        getFrame().getContentPane().add(mainPanel);
 
 
         renderScreen(DashboardPatientScreens.APPOINTMENTS);
@@ -227,7 +230,7 @@ public class DashboardPatient {
         Font newNombreFont = currentNombreFont.deriveFont(Font.BOLD, 20f);
         lblNombre.setFont(newNombreFont);
 
-        JPanel panel = new JPanel();
+        CustomCalendar panel = new CustomCalendar(HospitalController.getInstance().getCurrentUser());
         panel.setBounds(12, 164, 389, 391);
         rightPanel.add(panel);
         JButton btnCreateNewQuery = new JButton("Agendar nueva cita");
@@ -242,8 +245,8 @@ public class DashboardPatient {
         
         rightPanel.add(btnCreateNewQuery);
 
-        frame.revalidate();
-        frame.repaint();
+        getFrame().revalidate();
+        getFrame().repaint();
     }
     
     public interface GeneralCallback {
@@ -253,8 +256,8 @@ public class DashboardPatient {
     public void renderProfileScreen() {
         mainPanel.removeAll();
 
-        frame.revalidate();
-        frame.repaint();
+        getFrame().revalidate();
+        getFrame().repaint();
     }
 
     private void filterQueriesByDoctorName() {
@@ -297,6 +300,16 @@ public class DashboardPatient {
         cardPanel.revalidate();
         cardPanel.repaint();
     }
+
+
+	public JFrame getFrame() {
+		return frame;
+	}
+
+
+	public void setFrame(JFrame frame) {
+		this.frame = frame;
+	}
     
 
 }

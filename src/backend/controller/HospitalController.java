@@ -37,6 +37,9 @@ public class HospitalController {
         this.vaccines = new ArrayList<>();
         this.diseases = new ArrayList<>();
         this.currentPatient = new Patient("999", "Javier Emilio", "Gondres", "123456", new Date(), 1000, null, 100, 160);
+        addPatient(currentPatient);
+        addEmployee(new MedicalEmployee("123", "Alejandro", "Liz", "123456", new Date(), 100, null, LocalTime.of(9,0), LocalTime.of(15, 30), null, QueryTime.THIRTY_MINUTES, 400));
+        createQuery("41", "999", "123", 2, new Date(), null, LocalTime.NOON, null);
         this.patients.add(currentPatient);
     }
 
@@ -229,14 +232,16 @@ public class HospitalController {
     	for(Patient p: patients) {
     		if(p.getUserName().equals(username) && p.getPassword().equals(password)) {
     			setAccessType(AccessType.BAJO);
-    			return p.getId();
+    			currentUserId = p.getId();
+    			return currentUserId;
     		}
     	}
     	for(Employee e: employees) {
     		if(e.getUserName().equals(username) && e.getPassword().equals(password)) {
     			if(e instanceof MedicalEmployee) setAccessType(AccessType.MEDIO);
     			else setAccessType(AccessType.ALTO);
-    			return e.getId();
+    			currentUserId = e.getId();
+    			return currentUserId;
     		}
     	}
     	return null;
@@ -250,13 +255,11 @@ public class HospitalController {
     	}
     	for(Employee e: employees) {
     		if(e.getId().equals(Id)) {
-    			return e;
+    			return e; 
     		}
     	}
     	return null;
     }
-    
-    
     
     public User getCurrentUser() {
     	return findUserById(currentUserId);
