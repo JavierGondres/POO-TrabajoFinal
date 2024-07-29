@@ -3,8 +3,10 @@ import backend.classes.Record;
 import backend.controller.HospitalController;
 import backend.enums.*;
 import backend.file.FileHandler;
+import backend.file.Server;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,14 +17,14 @@ import static backend.enums.QueryTime.THIRTY_MINUTES;
 
 public class Main {
     public static void main(String[] args) {
-        Patient patient = new Patient("1", "John", "Doe", "1234", new Date(), 1000, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"), 100, 160);
-        Patient patient2 = new Patient("2", "John", "Doe", "1234", new Date(), 1000, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"), 100, 160);
+        Patient patient = new Patient("1", "John", "Doe", "1234", new Date(), 1000, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"), 100, 160);
+        Patient patient2 = new Patient("2", "John", "Doe", "1234", new Date(), 1000, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"), 100, 160);
         MedicalEmployee doctor = new MedicalEmployee("2", "Jane", "Doe", "1234", new Date(),
-                1000, new ArrayList<Specialty>(), LocalTime.of(8, 0), LocalTime.of(16, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"), QueryTime.NINETY_MINUTES, 200);
+                1000, new ArrayList<Specialty>(), LocalTime.of(8, 0), LocalTime.of(16, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"), QueryTime.NINETY_MINUTES, 200);
         Room room = new Room("1", "1", "1", true, new Date());
         Disease disease = new Disease("1", "Covid-19", true, ACUTE);
         AdministrativeEmployee admin = new AdministrativeEmployee("3", "Scarlet", "Abreu", "1234", new Date(), 1000,
-                LocalTime.of(8, 0), LocalTime.of(16, 0), ALTO, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"));
+                LocalTime.of(8, 0), LocalTime.of(16, 0), ALTO, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"));
         Record record = new Record("1", "1", "DESCRIPCION", new ArrayList<Disease>(),
                 new ArrayList<Vaccine>(), 100, 100, new Date());
         Vaccine vaccine = new Vaccine("1", "vacuna", "1", 0, 100);
@@ -63,14 +65,45 @@ public class Main {
 
 //        FileHandler fileHandler = new FileHandler();
 //        try {
-//            fileHandler.writeFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt", "Hello World");
-//            fileHandler.readFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt");
-//            fileHandler.delateFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt");
+//            fileHandler.writeFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt", "Hello World");
+//            fileHandler.readFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt");
+//            fileHandler.delateFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt");
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
 
 //        System.out.println(doctor.getRangeOfQueryTime());
+
+
+        // Ejecutar el servidor en un hilo separado
+        new Thread(() -> {
+            try {
+                Server.main(null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        // Espera un momento para asegurarte de que el servidor esté listo
+        try {
+            Thread.sleep(1000); // 1 segundo de espera
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Crear y enviar el archivo
+        String filePath = "C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt";
+        String hostname = "localhost"; // Dirección del servidor
+        int port = 12345; // Puerto del servidor
+
+        FileHandler fileHandler = new FileHandler();
+
+        try {
+            fileHandler.sendFile(filePath, hostname, port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 }

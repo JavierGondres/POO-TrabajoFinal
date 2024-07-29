@@ -48,7 +48,7 @@ public class HospitalController {
         this.diseases = new ArrayList<>();
         this.currentPatient = new Patient("999", "Javier Emilio", "Gondres", "123456", new Date(), 1000, null, 100, 160);
         this.currentMedicalEmployee = new MedicalEmployee("1", "Jane", "Doe", "1234", new Date(),
-                1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"), QueryTime.THIRTY_MINUTES, 200);
+                1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"), QueryTime.THIRTY_MINUTES, 200);
         this.patients.add(currentPatient);
         this.employees.add(currentMedicalEmployee);
     }

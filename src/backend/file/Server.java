@@ -1,10 +1,12 @@
+package backend.file;
+
 import java.io.*;
 import java.net.*;
 
-public class Servidor {
+public class Server {
     public static void main(String[] args) {
         int port = 12345;
-        String outputFilePath = "ruta/al/archivoRecibido.txt"; // Ruta donde se guardará el archivo recibido
+        String outputFilePath = "C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\ClienteSocketFile";
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Servidor escuchando en el puerto " + port);
