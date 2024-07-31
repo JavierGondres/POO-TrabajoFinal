@@ -1,24 +1,29 @@
 package backend.file;
 
-import backend.controller.HospitalController;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileHandler implements FileOperations {
 
     @Override
-    public void readFile(String filePath) throws IOException {
+    public String readFile(String filePath) throws IOException {
         String content = new String(Files.readAllBytes(Paths.get(filePath)));
-        System.out.println(content);
+        System.out.println("Contenido leído: " + content);
+        return content;
     }
 
     @Override
     public void writeFile(String filePath, String content) throws IOException {
-        Files.write(Paths.get(filePath), content.getBytes());
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(content);
+            writer.flush(); 
+        } catch (IOException e) {
+            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+            throw e; 
+        }
     }
 
     @Override
