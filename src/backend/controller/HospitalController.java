@@ -6,12 +6,14 @@ import backend.enums.*;
 import backend.utils.IdGenerator;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HospitalController {
     private ArrayList<Employee> employees;
@@ -48,7 +50,7 @@ public class HospitalController {
         this.diseases = new ArrayList<>();
         this.currentPatient = new Patient("999", "Javier Emilio", "Gondres", "123456", new Date(), 1000, null, 100, 160);
         this.currentMedicalEmployee = new MedicalEmployee("1", "Jane", "Doe", "1234", new Date(),
-                1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"), QueryTime.THIRTY_MINUTES, 200);
+                1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"), QueryTime.THIRTY_MINUTES, 200);
         this.patients.add(currentPatient);
         this.employees.add(currentMedicalEmployee);
     }
@@ -430,5 +432,54 @@ public class HospitalController {
         existingQuery.setDate(date);
         existingQuery.setStartingTime(startingTime);
         existingQuery.setEndingTime(endingTime);
+    }
+
+    public String serializeToJson() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = dateFormat.format(new Date());
+
+        String employeesJson = employees.stream()
+                .map(Employee::serializeToJson) // Necesitarás implementar esto en la clase Employee
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String patientsJson = patients.stream()
+                .map(Patient::serializeToJson) // Necesitarás implementar esto en la clase Patient
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String roomsJson = rooms.stream()
+                .map(Room::serializeToJson) // Necesitarás implementar esto en la clase Room
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String queriesJson = queries.stream()
+                .map(Query::serializeToJson) // Necesitarás implementar esto en la clase Query
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String recordsJson = records.entrySet().stream()
+                .map(entry -> "{\"patientId\":\"" + entry.getKey() + "\", \"record\":" + entry.getValue().serializeToJson() + "}") // Necesitarás implementar esto en la clase Record
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String vaccinesJson = vaccines.stream()
+                .map(Vaccine::serializeToJson) // Necesitarás implementar esto en la clase Vaccine
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String diseasesJson = diseases.stream()
+                .map(Disease::serializeToJson) // Necesitarás implementar esto en la clase Disease
+                .collect(Collectors.joining(",", "[", "]"));
+
+        return "{"
+                + "\"employees\":" + employeesJson + ","
+                + "\"patients\":" + patientsJson + ","
+                + "\"rooms\":" + roomsJson + ","
+                + "\"queries\":" + queriesJson + ","
+                + "\"records\":" + recordsJson + ","
+                + "\"vaccines\":" + vaccinesJson + ","
+                + "\"diseases\":" + diseasesJson + ","
+                + "\"priority\":\"" + priority + "\","
+                + "\"genre\":\"" + genre + "\","
+                + "\"specialty\":\"" + specialty + "\","
+                + "\"accessType\":\"" + access + "\","
+                + "\"currentPatient\":" + currentPatient.serializeToJson() + ","
+                + "\"currentMedicalEmployee\":" + currentMedicalEmployee.serializeToJson()
+                + "}";
     }
 }
