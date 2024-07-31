@@ -367,15 +367,13 @@ public class DashboardMedicalEmployee {
         cardPanel.revalidate();
         cardPanel.repaint();
         for (Query query : filteredQueries) {
-            LocalTime startingTime = query.getStartingTime();
-            LocalTime endTime = startingTime.plusMinutes(currentMedicalEmployee.getIntervalMinutesOfQueryTime());
-            String formattedTime = String.format("%s / %s", startingTime, endTime);
+            String time = query.getStartingTime().toString() + " / " + query.getEndingTime().toString();
             Patient patient = HospitalController.getInstance().findPatientById(query.getPatientID());
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             String formattedDate = sdf.format(query.getDate());
 
-            QueryCard queryCard = new QueryCard(patient.getUserName(), formattedDate, formattedTime);
+            QueryCard queryCard = new QueryCard(patient.getUserName(), formattedDate, time);
             queryCard.setPreferredSize(new Dimension(450, 179));
             queryCard.addMouseListener(new MouseAdapter() {
                 @Override
