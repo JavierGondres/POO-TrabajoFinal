@@ -1,5 +1,6 @@
 package backend.classes;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Room {
@@ -55,5 +56,20 @@ public class Room {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String serializeToJson() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        // Convertir la fecha a cadena en formato JSON
+        String formattedDate = (date != null) ? dateFormat.format(date) : "null";
+
+        return "{"
+                + "\"id\":\"" + id + "\","
+                + "\"patientID\":\"" + patientID + "\","
+                + "\"doctorID\":\"" + doctorID + "\","
+                + "\"available\":" + available + ","
+                + "\"date\":\"" + formattedDate + "\""
+                + "}";
     }
 }

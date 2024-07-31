@@ -22,7 +22,7 @@ public class CustomCalendar extends JPanel {
         
         HospitalController.getInstance().addPatient(new Patient("quesito", "quesito", "quesito", "quesito", null, 0, null, 1, 2));
         HospitalController.getInstance().addEmployee(new MedicalEmployee("quesitini", "quesito", "quesito", "quesito", null, 0F, null, null, null, null, null, 0F));
-        HospitalController.getInstance().createQuery("hola", "quesito", "quesitini", serialVersionUID, new Date(), null, LocalTime.NOON, null);
+        HospitalController.getInstance().createQuery("hola", "quesito", "quesitini", serialVersionUID, new Date(), null, LocalTime.NOON, LocalTime.MIDNIGHT);
 
         // Add CustomCalendar panel
         CustomCalendar calendarPanel = new CustomCalendar(HospitalController.getInstance().findUserById("quesito"));
@@ -146,7 +146,7 @@ public class CustomCalendar extends JPanel {
             JLabel label = createDayLabel(String.valueOf(i));
             if (isQueryScheduled(year, month, i)) {
             	final int ind = i;
-                label.setBackground(ColorPallete.mainColor.darker());
+                label.setBackground(Color.MAGENTA);
                 label.setForeground(ColorPallete.mainColor_Light);
                 label.addMouseListener(new MouseAdapter() {
                     @Override
@@ -191,7 +191,7 @@ public class CustomCalendar extends JPanel {
 
     private void showQueryPopup(int year, int month, int day) {
         StringBuilder popupContent = new StringBuilder();
-        popupContent.append("Queries scheduled for ").append(day).append(" ").append(new DateFormatSymbols(new Locale("es")).getMonths()[month]).append(" ").append(year).append(":\n\n");
+        popupContent.append("Citas para el: ").append(day).append(" ").append(new DateFormatSymbols(new Locale("es")).getMonths()[month]).append(" ").append(year).append(":\n\n");
 
         for (Query query : queries) {
             Calendar cal = Calendar.getInstance();

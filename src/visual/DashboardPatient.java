@@ -56,7 +56,8 @@ public class DashboardPatient {
 
     public DashboardPatient() {
     	currentPatient = HospitalController.getInstance().getCurrentPatient();
-        frame = new JFrame();
+        System.out.println(currentPatient.getUserName());
+    	frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1382, 778);
         frame.getContentPane().setBackground(Color.decode("#668dc0"));
@@ -216,7 +217,7 @@ public class DashboardPatient {
         mainPanel.add(rightPanel);
         rightPanel.setLayout(null);
 
-        JLabel lblBalance = new JLabel(HospitalController.getInstance().getCurrentUser().getBalance() + " $RD");
+        JLabel lblBalance = new JLabel(HospitalController.getInstance().getCurrentPatient().getBalance() + " $RD");
         lblBalance.setBounds(229, 85, 154, 16);
         lblBalance.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblBalance);
@@ -224,8 +225,9 @@ public class DashboardPatient {
         Font newBalanceFont = currentBalanceFont.deriveFont(16f);
         lblBalance.setFont(newBalanceFont);
 
-        JLabel lblNombre = new JLabel(HospitalController.getInstance().getCurrentUser().getUserName() + HospitalController.getInstance().getCurrentUser().getLastName());
+        JLabel lblNombre = new JLabel(HospitalController.getInstance().getCurrentUser().getUserName() + " " + HospitalController.getInstance().getCurrentUser().getLastName());
         lblNombre.setBounds(229, 41, 184, 31);
+        lblNombre.setPreferredSize(new Dimension (184, 31));
         lblNombre.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblNombre);
         Font currentNombreFont = lblNombre.getFont();
@@ -273,7 +275,7 @@ public class DashboardPatient {
 
         for (Query query : queries) {
             Employee doctor = HospitalController.getInstance().findEmployeeById(query.getDoctorID());
-            if (doctor.getUserName().toLowerCase().contains(searchText)) {
+            if (doctor.getUserName().toLowerCase().contains(searchText) && query.getPatientID().equals(currentPatient.getId())) {
                 filteredQueries.add(query);
             }
         }

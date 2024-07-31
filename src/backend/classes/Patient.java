@@ -1,6 +1,8 @@
 package backend.classes;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Patient extends User {
@@ -31,8 +33,27 @@ public class Patient extends User {
         this.height = height;
     }
 
-
 	public void setRegisterDate(Date time) {
 		this.registerDate = time;		
 	}
+
+    public String serializeToJson() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String birthday = dateFormat.format(this.getBirthday()); // Asume que getBirthday() es un método en User
+
+        // La ruta del archivo se convierte en una cadena
+        String profilePicturePath = (this.getProfilePicture() != null) ? this.getProfilePicture().getAbsolutePath() : "null";
+
+        return "{"
+                + "\"id\":\"" + getId() + "\","
+                + "\"userName\":\"" + getUserName() + "\","
+                + "\"lastName\":\"" + getLastName() + "\","
+                + "\"password\":\"" + getPassword() + "\","
+                + "\"birthday\":\"" + birthday + "\","
+                + "\"balance\":" + getBalance() + ","
+                + "\"profilePicture\":\"" + profilePicturePath + "\","
+                + "\"weigth\":" + weigth + ","
+                + "\"height\":" + height
+                + "}";
+    }
 }

@@ -335,7 +335,8 @@ public class LoginDialog extends JFrame implements AnimationCallback {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!isSelected) {
-                    // Login logic
+                    clearRegistrationFields();
+                    setEditableRegistrationFields(false);
                     String userId = HospitalController.getInstance().loginUser(usernameField.getText(), new String(passwordField.getPassword()));
                     if (userId != null) {
                         if (HospitalController.getInstance().findUserById(userId) instanceof Patient) {
@@ -349,14 +350,11 @@ public class LoginDialog extends JFrame implements AnimationCallback {
                         	dispose();
                         }
                     } else {
-                        // Show error message if login failed
                         JOptionPane.showMessageDialog(LoginDialog.this, "Nombre de usuario o contraseña incorrectos.", "Error de Login", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
-                    // Registration logic
                     if (usernameField.getText().isEmpty() || lastnameField.getText().isEmpty() || new String(passwordField.getPassword()).isEmpty() ||
                         cbxMonth.getSelectedItem() == null || daySpinner.getValue() == null || yearSpinner.getValue() == null) {
-                        // Show error message if registration fields are missing
                         JOptionPane.showMessageDialog(LoginDialog.this, "Por favor, complete todos los campos.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
                     } else {
                         Calendar c = Calendar.getInstance();
@@ -371,7 +369,7 @@ public class LoginDialog extends JFrame implements AnimationCallback {
                                 dispose();
                             }
                         } else {
-                            // Show error message if registration login failed
+
                             JOptionPane.showMessageDialog(LoginDialog.this, "No se pudo registrar el usuario. Inténtelo de nuevo.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
                         }
                         
@@ -477,6 +475,8 @@ public class LoginDialog extends JFrame implements AnimationCallback {
 	        daySpinner.setVisible(true);
 	        yearSpinner.setVisible(true);
 	        cbxMonth.setVisible(true);
+	        Animations.fadeInOutForeground(Birthdate, true);
+	        Animations.fadeInOutForeground(Lastname, true);
 			Animations.gotoXY(daySpinner, daySpinner.getX(), daySpinner.getY()+30, null);
 			Animations.gotoXY(yearSpinner, yearSpinner.getX(), yearSpinner.getY()+30, null);
 			Animations.gotoXY(cbxMonth, cbxMonth.getX(), cbxMonth.getY()+30, null);
@@ -521,6 +521,21 @@ public class LoginDialog extends JFrame implements AnimationCallback {
 		}
 	}
 	
+	private void setEditableRegistrationFields(boolean editable) {
+	    lastnameField.setEditable(editable);
+	    cbxMonth.setEnabled(editable);
+	    daySpinner.setEnabled(editable);
+	    yearSpinner.setEnabled(editable);
+	}
+
+	
+	private void clearRegistrationFields() {
+	    lastnameField.setText("");
+	    cbxMonth.setSelectedIndex(0);
+	    daySpinner.setValue(1);
+	    yearSpinner.setValue(Calendar.getInstance().get(Calendar.YEAR));
+	}
+
     private void updateDays() {
         String month = (String)cbxMonth.getSelectedItem();
         int year = (int) yearSpinner.getValue();
