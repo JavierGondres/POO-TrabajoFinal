@@ -11,7 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 public abstract class Animations {
-	
+	//pan con cachu
 	public static void gotoXY(Component c, int x, int y) {
         
         int changeX;
