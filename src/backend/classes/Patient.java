@@ -1,7 +1,6 @@
 package backend.classes;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class Patient extends User {
@@ -31,4 +30,9 @@ public class Patient extends User {
     public void setHeight(float height) {
         this.height = height;
     }
+
+
+	public void setRegisterDate(Date time) {
+		this.registerDate = time;		
+	}
 }

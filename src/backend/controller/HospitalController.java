@@ -3,7 +3,6 @@ package backend.controller;
 import backend.classes.*;
 import backend.classes.Record;
 import backend.enums.*;
-import backend.utils.IdGenerator;
 
 import java.io.File;
 import java.time.LocalTime;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 public class HospitalController {
     private ArrayList<Employee> employees;
@@ -26,6 +24,7 @@ public class HospitalController {
     private Specialty specialty;
     private AccessType access;
     private Patient currentPatient;
+    private String currentUserId;
 
     public MedicalEmployee getCurrentMedicalEmployee() {
         return currentMedicalEmployee;
@@ -59,7 +58,45 @@ public class HospitalController {
         }
         return instance;
     }
+    
+    public String loginUser(String username, String password) {
+    	for(Patient p: patients) {
+    		if(p.getUserName().equals(username) && p.getPassword().equals(password)) {
+    			setAccessType(AccessType.BAJO);
+    			currentUserId = p.getId();
+    			currentPatient = p;
+    			return currentUserId;
+    		}
+    	}
+    	for(Employee e: employees) {
+    		if(e.getUserName().equals(username) && e.getPassword().equals(password)) {
+    			if(e instanceof MedicalEmployee) setAccessType(AccessType.MEDIO);
+    			else setAccessType(AccessType.ALTO);
+    			currentUserId = e.getId();
+    			return currentUserId;
+    		}
+    	}
+    	return null;
+    }
+    
+    public User getCurrentUser() {
+    	return findUserById(currentUserId);
+    }
 
+    public User findUserById(String Id) {
+    	for(Patient p: patients) {
+    		if(p.getId().equals(Id)) {
+    			return p;
+    		}
+    	}
+    	for(Employee e: employees) {
+    		if(e.getId().equals(Id)) {
+    			return e; 
+    		}
+    	}
+    	return null;
+    }
+    
     public void addEmployee(Employee employee) {
         this.employees.add(employee);
     }
