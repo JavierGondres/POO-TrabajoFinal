@@ -28,6 +28,7 @@ import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class DashboardPatient {
     private JFrame frame;
@@ -283,28 +284,31 @@ public class DashboardPatient {
         cardPanel.revalidate();
         cardPanel.repaint();
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
         for (Query query : filteredQueries) {
             Employee doctor = HospitalController.getInstance().findEmployeeById(query.getDoctorID());
-            QueryCard queryCard = new QueryCard(doctor.getUserName(), "10/10/2024", "12:00PM - 01:00PM");
+            String time = query.getStartingTime().toString() + " / " + query.getEndingTime().toString();
+            String formattedDate = dateFormat.format(query.getDate());
+            QueryCard queryCard = new QueryCard(doctor.getUserName(), formattedDate, time);
             queryCard.setPreferredSize(new Dimension(450, 179));
 
             queryCard.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                	UpdateCreateReadQuery component = new UpdateCreateReadQuery(query, new backend.interfaces.GeneralCallback() {
+                    UpdateCreateReadQuery component = new UpdateCreateReadQuery(query, new backend.interfaces.GeneralCallback() {
                         @Override
                         public void onPressOk() {
                             filterQueriesByDoctorName();
                         }
                     }, UserType.MEDICAL_EMPLOYEE);
-                	component.setModal(true);
-                	component.setVisible(true);
+                    component.setModal(true);
+                    component.setVisible(true);
                 }
             });
 
             cardPanel.add(queryCard, gbc);
         }
-
 
         cardPanel.revalidate();
         cardPanel.repaint();
