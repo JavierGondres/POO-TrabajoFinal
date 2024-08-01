@@ -30,22 +30,35 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import backend.classes.*;
+import backend.classes.Disease;
+import backend.classes.MedicalEmployee;
+import backend.classes.Patient;
+import backend.classes.Query;
 import backend.classes.Record;
+import backend.classes.Room;
+import backend.classes.Vaccine;
 import backend.controller.HospitalController;
-import backend.enums.*;
+import backend.enums.DashboardAdministrativeScreens;
+import backend.enums.DashboardMedicalEmployeeScreens;
+import backend.enums.Priority;
+import backend.enums.QueryTime;
+import backend.enums.Specialty;
+import backend.enums.UserType;
+import backend.interfaces.GeneralCallback;
+import backend.utils.IdGenerator;
 import visual.components.CustomTextField;
 import visual.components.MainPanel;
 import visual.components.QueryCard;
+import visual.components.RoomCard;
 import visual.components.RoundedPanel;
 import visual.components.SliderPanel;
 import visual.components.UserCardOptions;
 
-public class DashboardMedicalEmployee {
+public class DashboardAdministrative {
 
     private JFrame frame;
     private JTextField textFieldBuscar;
-    private ArrayList<Query> queries = new ArrayList<>();
+    private ArrayList<Room> rooms = new ArrayList<>();
     private JPanel cardPanel = new JPanel();
     private GridBagConstraints gbc = new GridBagConstraints();
     private SliderPanel sliderPanel;
@@ -59,7 +72,7 @@ public class DashboardMedicalEmployee {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    DashboardMedicalEmployee window = new DashboardMedicalEmployee();
+                    DashboardAdministrative window = new DashboardAdministrative();
                     window.frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -71,7 +84,7 @@ public class DashboardMedicalEmployee {
     /**
      * Create the application.
      */
-    public DashboardMedicalEmployee() {
+    public DashboardAdministrative() {
         currentMedicalEmployee = HospitalController.getInstance().getCurrentMedicalEmployee();
         frame = new JFrame();
         frame.setResizable(false);
@@ -82,28 +95,24 @@ public class DashboardMedicalEmployee {
         frame.getContentPane().setLayout(null);
 
         initializeDummyData();
-        queries = HospitalController.getInstance().getConsultations();
+        rooms = HospitalController.getInstance().getRooms();
 
         ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
 
-        JButton citasButton = new JButton("Citas");
-        citasButton.addActionListener(e -> renderScreen(DashboardMedicalEmployeeScreens.APPOINTMENTS));
-        buttonInfoList.add(new SliderPanel.ButtonInfo(citasButton, "/assets/images/medical-appointment.png"));
+        JButton habitacionesButton = new JButton("Habitaciones");
+        habitacionesButton.addActionListener(e -> renderScreen(DashboardAdministrativeScreens.ROOMS));
+        buttonInfoList.add(new SliderPanel.ButtonInfo(habitacionesButton, "/assets/images/bedroom.png"));
 
-        JButton perfilButton = new JButton("Perfil");
-        perfilButton.addActionListener(e -> renderScreen(DashboardMedicalEmployeeScreens.PROFILE));
-        buttonInfoList.add(new SliderPanel.ButtonInfo(perfilButton, null));
-
-        JButton myPatientsButton = new JButton("Mis pacientes");
+        JButton myPatientsButton = new JButton("Pacientes");
         myPatientsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 RenderUsers renderPatients = new RenderUsers(
-                        HospitalController.getInstance().getPatientsFromMedicalEmployee(currentMedicalEmployee.getId()),
+                        HospitalController.getInstance().getPatients(),
                         UserType.PATIENT,
                         null,
                         user -> {
 
-                            ArrayList<JButton> buttonsCard = generateUserCardOptions((Patient)user);
+                            ArrayList<JButton> buttonsCard = generateUserCardOptions((Patient) user);
                             UserCardOptions userCardOptions = new UserCardOptions(buttonsCard);
                             userCardOptions.setModal(true);
                             userCardOptions.setVisible(true);
@@ -116,10 +125,49 @@ public class DashboardMedicalEmployee {
             }
         });
         buttonInfoList.add(new SliderPanel.ButtonInfo(myPatientsButton, null));
+        
+        JButton doctorsButton = new JButton("Doctores");
+        doctorsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RenderUsers renderPatients = new RenderUsers(
+                        HospitalController.getInstance().getMedicalEmployees(),
+                        UserType.MEDICAL_EMPLOYEE,
+                        null,
+                        user -> {
 
-        JButton ajustesButton = new JButton("Ajustes");
-        ajustesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
-        buttonInfoList.add(new SliderPanel.ButtonInfo(ajustesButton, null));
+//                            ArrayList<JButton> buttonsCard = generateUserCardOptions((Patient) user);
+//                            UserCardOptions userCardOptions = new UserCardOptions(buttonsCard);
+//                            userCardOptions.setModal(true);
+//                            userCardOptions.setVisible(true);
+                        },
+                        true
+                );
+
+                renderPatients.setModal(true);
+                renderPatients.setVisible(true);
+            }
+        });
+        buttonInfoList.add(new SliderPanel.ButtonInfo(doctorsButton, null));
+
+        JButton vacunasBtn = new JButton("Vacunas");
+        vacunasBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	SelectDisease selectD = new SelectDisease(HospitalController.getInstance().getDiseases(), new backend.interfaces.GeneralCallback() {
+                    @Override
+                    public void onGetObject(Object object) {
+                        backend.interfaces.GeneralCallback.super.onGetObject(object);
+                    }
+                });
+
+                selectD.setModal(true);
+                selectD.setVisible(true);
+            }
+        });
+        buttonInfoList.add(new SliderPanel.ButtonInfo(vacunasBtn, null));
+        
+        JButton enfermedadesButton = new JButton("Enfermedades");
+        enfermedadesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
+        buttonInfoList.add(new SliderPanel.ButtonInfo(enfermedadesButton, null));
 
         sliderPanel = new SliderPanel("Hospital", buttonInfoList);
         sliderPanel.setBackground(Color.decode("#668dc0"));
@@ -128,8 +176,9 @@ public class DashboardMedicalEmployee {
 
 
         mainPanel = new MainPanel();
+        mainPanel.setBounds(262, 5, 1096, 738);
         frame.getContentPane().add(mainPanel);
-        renderScreen(DashboardMedicalEmployeeScreens.APPOINTMENTS);
+        renderRoomsScreen();
     }
 
     private ArrayList<JButton> generateUserCardOptions(Patient patient) {
@@ -192,24 +241,32 @@ public class DashboardMedicalEmployee {
         Vaccine vaccine3 = new Vaccine("3", "vacuna3", "3", 5, 10);
         Vaccine vaccine4 = new Vaccine("4", "vacuna4", "4", 6, 10);
 
+        Room room1 = new Room(IdGenerator.generarID(), patient1.getId(), currentMedicalEmployee.getId(), false, new Date());
+        Room room2 = new Room(IdGenerator.generarID(), patient1.getId(), currentMedicalEmployee.getId(), false, new Date());
+        Room room3 = new Room(IdGenerator.generarID(), patient1.getId(), currentMedicalEmployee.getId(), false, new Date());
+        Room room4 = new Room(IdGenerator.generarID(), patient1.getId(), currentMedicalEmployee.getId(), false, new Date());
+        HospitalController.getInstance().addRoom(room1);
+        HospitalController.getInstance().addRoom(room2);
+        HospitalController.getInstance().addRoom(room3);
+        HospitalController.getInstance().addRoom(room4);
         HospitalController.getInstance().addVaccine(vaccine1);
         HospitalController.getInstance().addVaccine(vaccine2);
         HospitalController.getInstance().addVaccine(vaccine3);
         HospitalController.getInstance().addVaccine(vaccine4);
-        try {        	
-        	Record record = HospitalController.getInstance().getRecord(patient1.getId());
+        try {
+            Record record = HospitalController.getInstance().getRecord(patient1.getId());
             ArrayList<Disease> enfermedades = new ArrayList<>();
             enfermedades.add(enfermedad1);
             enfermedades.add(enfermedad2);
-            
+
             ArrayList<Vaccine> vaccines = new ArrayList<>();
             vaccines.add(vaccine1);
             vaccines.add(vaccine2);
             record.setVaccines(vaccines);
             HospitalController.getInstance().updateRecord(patient1.getId(), record);
-        }catch(IllegalArgumentException e) {
-        	HospitalController.getInstance().initializePatientRecord(patient1);
-        	Record record = HospitalController.getInstance().getRecord(patient1.getId());
+        } catch (IllegalArgumentException e) {
+            HospitalController.getInstance().initializePatientRecord(patient1);
+            Record record = HospitalController.getInstance().getRecord(patient1.getId());
             ArrayList<Disease> enfermedades = new ArrayList<>();
             enfermedades.add(enfermedad1);
             enfermedades.add(enfermedad2);
@@ -225,33 +282,30 @@ public class DashboardMedicalEmployee {
 
     }
 
-    private void renderScreen(DashboardMedicalEmployeeScreens screen) {
+    private void renderScreen(DashboardAdministrativeScreens screen) {
         switch (screen) {
-            case APPOINTMENTS:
-                renderAppointmentsScreen();
-                break;
-            case PROFILE:
-                renderProfileScreen();
+            case ROOMS:
+            	renderRoomsScreen();
                 break;
             default:
                 break;
         }
     }
 
-    public void renderAppointmentsScreen() {
+    public void renderRoomsScreen() {
         mainPanel.removeAll();
-        JLabel lblMisCitas = new JLabel("Mis Citas");
+        JLabel lblMisCitas = new JLabel("Habitaciones");
         lblMisCitas.setForeground(Color.decode("#668dc0"));
-        lblMisCitas.setBounds(27, 25, 207, 71);
+        lblMisCitas.setBounds(27, 25, 290, 71);
         Font currentFont = lblMisCitas.getFont();
         Font newFont = currentFont.deriveFont(Font.BOLD, 40f);
         lblMisCitas.setFont(newFont);
         mainPanel.add(lblMisCitas);
 
-        JLabel lblBuscar = new JLabel("Buscar");
+        JLabel lblBuscar = new JLabel("Buscar por ID:");
         lblBuscar.setForeground(Color.decode("#668dc0"));
         lblBuscar.setFont(new Font("Tahoma", Font.BOLD, 16));
-        lblBuscar.setBounds(27, 112, 66, 22);
+        lblBuscar.setBounds(27, 112, 124, 22);
         mainPanel.add(lblBuscar);
 
         URL imageURL = getClass().getResource("/assets/images/search.png");
@@ -260,23 +314,23 @@ public class DashboardMedicalEmployee {
         searchIcon = new ImageIcon(img);
 
         textFieldBuscar = new CustomTextField(searchIcon);
-        textFieldBuscar.setBounds(98, 109, 207, 30);
+        textFieldBuscar.setBounds(163, 109, 207, 30);
         textFieldBuscar.setColumns(10);
         textFieldBuscar.setBackground(new Color(245, 245, 245));
         textFieldBuscar.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                filterQueriesByPatientName();
+            	filterRoomsByID();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                filterQueriesByPatientName();
+            	filterRoomsByID();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                filterQueriesByPatientName();
+            	filterRoomsByID();
             }
         });
 
@@ -297,7 +351,7 @@ public class DashboardMedicalEmployee {
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.weighty = 1.0;
 
-        filterQueriesByPatientName();
+        filterRoomsByID();
 
         scrollPane.setViewportView(cardPanel);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -310,7 +364,7 @@ public class DashboardMedicalEmployee {
         rightPanel.setHoverEnabled(false);
         rightPanel.setBackground(Color.decode("#c0d0ef"));
         rightPanel.setCornerRadii(0, 30, 30, 0);
-        rightPanel.setBounds(683, 0, 413, 904);
+        rightPanel.setBounds(683, 0, 413, 738);
         mainPanel.add(rightPanel);
         rightPanel.setLayout(null);
 
@@ -330,10 +384,22 @@ public class DashboardMedicalEmployee {
         Font newNombreFont = currentNombreFont.deriveFont(Font.BOLD, 20f);
         lblNombre.setFont(newNombreFont);
 
-        JPanel panel = new JPanel();
-        panel.setBounds(12, 164, 389, 391);
-        rightPanel.add(panel);
-
+        JButton btnCreateRoom = new JButton("Agregar habitacion");
+        btnCreateRoom.setBounds(47, 154, 336, 40);
+        btnCreateRoom.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                CreateUpdateRoom crRoom = new CreateUpdateRoom(null, new backend.interfaces.GeneralCallback() {
+                    @Override
+                    public void onPressOk() {
+                    	filterRoomsByID();
+                    }
+                });
+                crRoom.setModal(true);
+                crRoom.setVisible(true);
+            }
+        });
+        rightPanel.add(btnCreateRoom);
+        
         frame.revalidate();
         frame.repaint();
     }
@@ -349,51 +415,51 @@ public class DashboardMedicalEmployee {
         frame.repaint();
     }
 
-    private void filterQueriesByPatientName() {
+    private void filterRoomsByID() {
         String searchText = textFieldBuscar.getText().toLowerCase();
-        ArrayList<Query> filteredQueries = new ArrayList<>();
+        ArrayList<Room> filteredRooms = new ArrayList<>();
 
-        for (Query query : queries) {
-            Patient patient = HospitalController.getInstance().findPatientById(query.getPatientID());
-            if (patient.getUserName().toLowerCase().contains(searchText)) {
-                filteredQueries.add(query);
+        for (Room room : rooms) {
+            if (room.getId().toLowerCase().contains(searchText)) {
+                filteredRooms.add(room);
             }
         }
 
-        updateQueryCards(filteredQueries);
+        updateRoomCards(filteredRooms);
     }
 
-    private void updateQueryCards(ArrayList<Query> filteredQueries) {
+    private void updateRoomCards(ArrayList<Room> filteredRooms) {
         cardPanel.removeAll();
         cardPanel.revalidate();
         cardPanel.repaint();
-        for (Query query : filteredQueries) {
-            String time = query.getStartingTime().toString() + " / " + query.getEndingTime().toString();
-            Patient patient = HospitalController.getInstance().findPatientById(query.getPatientID());
+        for (Room room : filteredRooms) {
+            String id = room.getId();
+            Patient patient = HospitalController.getInstance().findPatientById(room.getPatientID());
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            String formattedDate = sdf.format(query.getDate());
-
-            QueryCard queryCard = new QueryCard(patient.getUserName(), formattedDate, time);
-            queryCard.setPreferredSize(new Dimension(450, 179));
-            queryCard.addMouseListener(new MouseAdapter() {
+            RoomCard roomCard;
+            if (patient != null) {
+                roomCard = new RoomCard(id, "Paciente: " + patient.getUserName(), room.isAvailable() ? "DISPONIBLE" : "OCUPADO");
+            } else {
+                roomCard = new RoomCard(id, "Paciente: No hay paciente", room.isAvailable() ? "DISPONIBLE" : "OCUPADO");
+            }
+            roomCard.setPreferredSize(new Dimension(450, 179));
+            roomCard.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    UpdateCreateReadQuery component = new UpdateCreateReadQuery(query, new backend.interfaces.GeneralCallback() {
+                	CreateUpdateRoom crRoom = new CreateUpdateRoom(room, new backend.interfaces.GeneralCallback() {
                         @Override
                         public void onPressOk() {
-                            filterQueriesByPatientName();
+                        	filterRoomsByID();
                         }
-                    }, UserType.PATIENT);
-                    component.setModal(true);
-                    component.setVisible(true);
+                    });
+                    crRoom.setModal(true);
+                    crRoom.setVisible(true);
                 }
             });
-            cardPanel.add(queryCard, gbc);
+            cardPanel.add(roomCard, gbc);
         }
         cardPanel.revalidate();
         cardPanel.repaint();
     }
-
 
 }

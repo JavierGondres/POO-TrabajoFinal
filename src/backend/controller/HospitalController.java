@@ -90,14 +90,25 @@ public class HospitalController {
         this.diseases.add(disease);
     }
 
-    public void removeEmployee(Employee employee) {
-        this.employees.remove(employee);
+    public void removeEmployee(String id) throws IllegalArgumentException {
+        for (Employee employee : employees) {
+            if (employee.getId().equals(id)) {
+                employees.remove(employee);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Employee not found with ID: " + id);
     }
 
-    public void removePatient(Patient patient) {
-        this.patients.remove(patient);
+    public void removePatient(String id) throws IllegalArgumentException {
+        for (Patient patient : patients) {
+            if (patient.getId().equals(id)) {
+                patients.remove(patient);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Patient not found with ID: " + id);
     }
-
     public void removeRoom(Room room) {
         this.rooms.remove(room);
     }
@@ -432,6 +443,19 @@ public class HospitalController {
         existingQuery.setDate(date);
         existingQuery.setStartingTime(startingTime);
         existingQuery.setEndingTime(endingTime);
+    }
+    
+    public void updateRoom(Room room) {
+    	Room existingRom = findRoomById(room.getId());
+        
+        if (existingRom == null) {
+            throw new IllegalArgumentException("No se encontro la habitacion con el ID: " + room.getId());
+        }
+        
+        existingRom.setDate(room.getDate());
+        existingRom.setPatientID(room.getPatientID());
+        existingRom.setDoctorID(room.getDoctorID());
+        existingRom.setAvailable(room.isAvailable());
     }
 
     public String serializeToJson() {

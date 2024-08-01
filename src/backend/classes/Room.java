@@ -26,11 +26,11 @@ public class Room {
         this.id = id;
     }
 
-    public String getPatirntID() {
+    public String getPatientID() {
         return patientID;
     }
 
-    public void setPatirntID(String patientID) {
+    public void setPatientID(String patientID) {
         this.patientID = patientID;
     }
 
