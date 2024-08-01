@@ -124,7 +124,7 @@ public class UpdateCreateReadQuery extends JDialog {
                         return;
                     initalizeFieldWithMedicalEmployee();
                     fillComboBoxWithAvailableTimes();
-                }, null);
+                }, null, false);
                 renderDoctors.setModal(true);
                 renderDoctors.setVisible(true);
             }

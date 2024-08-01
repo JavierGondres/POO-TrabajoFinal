@@ -44,6 +44,7 @@ import backend.enums.Priority;
 import backend.enums.QueryTime;
 import backend.enums.Specialty;
 import backend.enums.UserType;
+import backend.interfaces.GeneralCallback;
 import backend.utils.IdGenerator;
 import visual.components.CustomTextField;
 import visual.components.MainPanel;
@@ -115,7 +116,8 @@ public class DashboardAdministrative {
                             UserCardOptions userCardOptions = new UserCardOptions(buttonsCard);
                             userCardOptions.setModal(true);
                             userCardOptions.setVisible(true);
-                        }
+                        },
+                        false
                 );
 
                 renderPatients.setModal(true);
@@ -137,7 +139,8 @@ public class DashboardAdministrative {
 //                            UserCardOptions userCardOptions = new UserCardOptions(buttonsCard);
 //                            userCardOptions.setModal(true);
 //                            userCardOptions.setVisible(true);
-                        }
+                        },
+                        true
                 );
 
                 renderPatients.setModal(true);
@@ -146,13 +149,25 @@ public class DashboardAdministrative {
         });
         buttonInfoList.add(new SliderPanel.ButtonInfo(doctorsButton, null));
 
-        JButton perfilButton = new JButton("Perfil");
-        perfilButton.addActionListener(e -> renderScreen(DashboardAdministrativeScreens.PROFILE));
-        buttonInfoList.add(new SliderPanel.ButtonInfo(perfilButton, null));
+        JButton vacunasBtn = new JButton("Vacunas");
+        vacunasBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	SelectDisease selectD = new SelectDisease(HospitalController.getInstance().getDiseases(), new backend.interfaces.GeneralCallback() {
+                    @Override
+                    public void onGetObject(Object object) {
+                        backend.interfaces.GeneralCallback.super.onGetObject(object);
+                    }
+                });
+
+                selectD.setModal(true);
+                selectD.setVisible(true);
+            }
+        });
+        buttonInfoList.add(new SliderPanel.ButtonInfo(vacunasBtn, null));
         
-        JButton ajustesButton = new JButton("Ajustes");
-        ajustesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
-        buttonInfoList.add(new SliderPanel.ButtonInfo(ajustesButton, null));
+        JButton enfermedadesButton = new JButton("Enfermedades");
+        enfermedadesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
+        buttonInfoList.add(new SliderPanel.ButtonInfo(enfermedadesButton, null));
 
         sliderPanel = new SliderPanel("Hospital", buttonInfoList);
         sliderPanel.setBackground(Color.decode("#668dc0"));
@@ -287,10 +302,10 @@ public class DashboardAdministrative {
         lblMisCitas.setFont(newFont);
         mainPanel.add(lblMisCitas);
 
-        JLabel lblBuscar = new JLabel("Buscar por ID");
+        JLabel lblBuscar = new JLabel("Buscar por ID:");
         lblBuscar.setForeground(Color.decode("#668dc0"));
         lblBuscar.setFont(new Font("Tahoma", Font.BOLD, 16));
-        lblBuscar.setBounds(27, 112, 66, 22);
+        lblBuscar.setBounds(27, 112, 124, 22);
         mainPanel.add(lblBuscar);
 
         URL imageURL = getClass().getResource("/assets/images/search.png");
@@ -299,7 +314,7 @@ public class DashboardAdministrative {
         searchIcon = new ImageIcon(img);
 
         textFieldBuscar = new CustomTextField(searchIcon);
-        textFieldBuscar.setBounds(98, 109, 207, 30);
+        textFieldBuscar.setBounds(163, 109, 207, 30);
         textFieldBuscar.setColumns(10);
         textFieldBuscar.setBackground(new Color(245, 245, 245));
         textFieldBuscar.getDocument().addDocumentListener(new DocumentListener() {
@@ -373,14 +388,14 @@ public class DashboardAdministrative {
         btnCreateRoom.setBounds(47, 154, 336, 40);
         btnCreateRoom.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-//                UpdateCreateReadQuery updateCreateReadQuery = new UpdateCreateReadQuery(null, new backend.interfaces.GeneralCallback() {
-//                    @Override
-//                    public void onPressOk() {
-//                        filterQueriesByDoctorName();
-//                    }
-//                }, UserType.MEDICAL_EMPLOYEE);
-//                updateCreateReadQuery.setModal(true);
-//                updateCreateReadQuery.setVisible(true);
+                CreateUpdateRoom crRoom = new CreateUpdateRoom(null, new backend.interfaces.GeneralCallback() {
+                    @Override
+                    public void onPressOk() {
+                    	filterRoomsByID();
+                    }
+                });
+                crRoom.setModal(true);
+                crRoom.setVisible(true);
             }
         });
         rightPanel.add(btnCreateRoom);
@@ -431,14 +446,14 @@ public class DashboardAdministrative {
             roomCard.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-//                    UpdateCreateReadQuery component = new UpdateCreateReadQuery(roomCard, new backend.interfaces.GeneralCallback() {
-//                        @Override
-//                        public void onPressOk() {
-//                            filterQueriesByPatientName();
-//                        }
-//                    }, UserType.PATIENT);
-//                    component.setModal(true);
-//                    component.setVisible(true);
+                	CreateUpdateRoom crRoom = new CreateUpdateRoom(room, new backend.interfaces.GeneralCallback() {
+                        @Override
+                        public void onPressOk() {
+                        	filterRoomsByID();
+                        }
+                    });
+                    crRoom.setModal(true);
+                    crRoom.setVisible(true);
                 }
             });
             cardPanel.add(roomCard, gbc);

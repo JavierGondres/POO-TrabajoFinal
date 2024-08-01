@@ -107,7 +107,8 @@ public class DashboardMedicalEmployee {
                             UserCardOptions userCardOptions = new UserCardOptions(buttonsCard);
                             userCardOptions.setModal(true);
                             userCardOptions.setVisible(true);
-                        }
+                        },
+                        false
                 );
 
                 renderPatients.setModal(true);
