@@ -45,4 +45,16 @@ public class Disease {
     public void setPriority(Priority priority) {
         this.priority = priority;
     }
+
+    public String serializeToJson() {
+        // Convertir el enum Priority a su representación en cadena
+        String priorityStr = (priority != null) ? priority.name() : "null";
+
+        return "{"
+                + "\"id\":\"" + id + "\","
+                + "\"name\":\"" + name + "\","
+                + "\"isVaccinable\":" + isVaccinable + ","
+                + "\"priority\":\"" + priorityStr + "\""
+                + "}";
+    }
 }
