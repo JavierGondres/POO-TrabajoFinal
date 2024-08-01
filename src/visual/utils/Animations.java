@@ -1,4 +1,4 @@
-package visual;
+package visual.utils;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -12,7 +12,13 @@ import javax.swing.SwingConstants;
 
 public abstract class Animations {
 	
-	public static void gotoXY(Component c, int x, int y) {
+	public interface AnimationCallback {
+		void OnAnimationFinished();
+		void OnAnimationStarted();
+	}
+
+	
+	public static void gotoXY(Component c, int x, int y, AnimationCallback Callback) {
         
         int changeX;
         int changeY;
@@ -34,11 +40,17 @@ public abstract class Animations {
         	changeY = -1;
         }
 		
-	    Timer timer = new Timer(1, new ActionListener() {   
+    	if(Callback != null) {
+    		Callback.OnAnimationStarted();
+    	}
+        
+	    Timer timer = new Timer(1, new ActionListener() {
 	    	
 	    	int ind = 0;
 	    	int indX = c.getX();
 	    	int indY = c.getY();
+	    	
+	    	
 	        
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
@@ -55,6 +67,9 @@ public abstract class Animations {
 	            c.setLocation(new Point(indX, indY));
 	            
 	            if (indX == x && indY == y){
+		        	if(Callback != null) {
+		        		Callback.OnAnimationFinished();
+		        	}
 	                ((Timer) e.getSource()).stop();
 	            }
 	            
@@ -66,7 +81,7 @@ public abstract class Animations {
 
 	}
 	
-	public static void moveCARDINAL(Component c, int CONSTANT) {
+	public static void moveCARDINAL(Component c, int CONSTANT, AnimationCallback Callback) {
 
 		boolean xMov;
 		boolean yMov;
@@ -164,6 +179,10 @@ public abstract class Animations {
 	        	break;
 	        	
 	        }
+        
+    	if(Callback != null) {
+    		Callback.OnAnimationStarted();
+    	}
 		
 	    Timer timer = new Timer(1, new ActionListener() {   
 	    	
@@ -186,6 +205,9 @@ public abstract class Animations {
 	            c.setLocation(new Point(indX, indY));
 	            
 	            if (indX == goalX && indY == goalY){
+		        	if(Callback != null) {
+		        		Callback.OnAnimationFinished();
+		        	}
 	                ((Timer) e.getSource()).stop();
 	            }
 	            
@@ -198,7 +220,37 @@ public abstract class Animations {
 
 	}
 	
-	public static void fadeInOutLabel(JLabel label, boolean fadeIn) {
+	public static void fadeInOut(Component c, boolean fadeIn) {
+		
+        Timer timer = new Timer(100, new ActionListener() {
+            float alpha = c.getBackground().getAlpha()/255;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if (fadeIn) {
+                    if(alpha + 0.2 < 1) alpha += 0.2F;
+                    else alpha = 1;
+                } 
+                else {
+                	if(alpha - 0.2 > 0) alpha -= 0.2F;
+                	else alpha = 0;
+                }
+                
+                c.setBackground(new Color(c.getBackground().getRed()/255F, c.getBackground().getGreen()/255F, c.getBackground().getBlue()/255F, alpha));
+                
+                if (alpha == 0 || alpha == 1) {
+                	((Timer)e.getSource()).stop();
+                    return;
+                }
+
+            }
+        });
+        timer.start();
+        
+	}
+	
+	public static void fadeInOutForeground(Component label, boolean fadeIn) {
 		
         Timer timer = new Timer(100, new ActionListener() {
             float alpha = label.getForeground().getAlpha()/255;

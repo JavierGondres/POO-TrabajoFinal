@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -314,7 +315,7 @@ public class DashboardMedicalEmployee {
         mainPanel.add(rightPanel);
         rightPanel.setLayout(null);
 
-        JLabel lblBalance = new JLabel("1000 $RD");
+        JLabel lblBalance = new JLabel(HospitalController.getInstance().getCurrentUser().getBalance() + " $RD");
         lblBalance.setBounds(229, 85, 154, 16);
         lblBalance.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblBalance);
@@ -322,7 +323,7 @@ public class DashboardMedicalEmployee {
         Font newBalanceFont = currentBalanceFont.deriveFont(16f);
         lblBalance.setFont(newBalanceFont);
 
-        JLabel lblNombre = new JLabel("Javier Gondres");
+        JLabel lblNombre = new JLabel(HospitalController.getInstance().getCurrentUser().getUserName() + " " + HospitalController.getInstance().getCurrentUser().getLastName());
         lblNombre.setBounds(229, 41, 184, 31);
         lblNombre.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblNombre);
@@ -394,6 +395,10 @@ public class DashboardMedicalEmployee {
         cardPanel.revalidate();
         cardPanel.repaint();
     }
+
+	public JFrame getFrame() {
+		return frame;
+	}
 
 
 }

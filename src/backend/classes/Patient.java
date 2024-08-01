@@ -33,6 +33,10 @@ public class Patient extends User {
         this.height = height;
     }
 
+	public void setRegisterDate(Date time) {
+		this.registerDate = time;		
+	}
+
     public String serializeToJson() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String birthday = dateFormat.format(this.getBirthday()); // Asume que getBirthday() es un método en User

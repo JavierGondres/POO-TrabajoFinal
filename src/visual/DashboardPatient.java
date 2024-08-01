@@ -9,6 +9,7 @@ import backend.classes.MedicalEmployee;
 import backend.classes.Patient;
 import backend.classes.Query;
 import backend.controller.HospitalController;
+import visual.components.CustomCalendar;
 import backend.enums.DashboardPatientScreens;
 import backend.enums.QueryTime;
 import backend.enums.Specialty;
@@ -55,15 +56,17 @@ public class DashboardPatient {
 
     public DashboardPatient() {
     	currentPatient = HospitalController.getInstance().getCurrentPatient();
-        frame = new JFrame();
+        System.out.println(currentPatient.getUserName());
+    	frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1382, 778);
         frame.getContentPane().setBackground(Color.decode("#668dc0"));
         frame.setLocationRelativeTo(null);
         frame.getContentPane().setLayout(null);
 
-        initializeDummyData();
-        queries = HospitalController.getInstance().getPatientActiveQueries(currentPatient.getId());
+        if(HospitalController.getInstance().getCurrentUser() == null) initializeDummyData();
+        else System.out.print("Hola usuario");
+        queries = HospitalController.getInstance().getConsultations();
 
         ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
 
@@ -214,7 +217,7 @@ public class DashboardPatient {
         mainPanel.add(rightPanel);
         rightPanel.setLayout(null);
 
-        JLabel lblBalance = new JLabel("1000 $RD");
+        JLabel lblBalance = new JLabel(HospitalController.getInstance().getCurrentPatient().getBalance() + " $RD");
         lblBalance.setBounds(229, 85, 154, 16);
         lblBalance.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblBalance);
@@ -222,15 +225,16 @@ public class DashboardPatient {
         Font newBalanceFont = currentBalanceFont.deriveFont(16f);
         lblBalance.setFont(newBalanceFont);
 
-        JLabel lblNombre = new JLabel("Javier Gondres");
+        JLabel lblNombre = new JLabel(HospitalController.getInstance().getCurrentUser().getUserName() + " " + HospitalController.getInstance().getCurrentUser().getLastName());
         lblNombre.setBounds(229, 41, 184, 31);
+        lblNombre.setPreferredSize(new Dimension (184, 31));
         lblNombre.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblNombre);
         Font currentNombreFont = lblNombre.getFont();
         Font newNombreFont = currentNombreFont.deriveFont(Font.BOLD, 20f);
         lblNombre.setFont(newNombreFont);
 
-        JPanel panel = new JPanel();
+        CustomCalendar panel = new CustomCalendar(HospitalController.getInstance().getCurrentUser());
         panel.setBounds(12, 164, 389, 391);
         rightPanel.add(panel);
         JButton btnCreateNewQuery = new JButton("Agendar nueva cita");
@@ -271,7 +275,7 @@ public class DashboardPatient {
 
         for (Query query : queries) {
             Employee doctor = HospitalController.getInstance().findEmployeeById(query.getDoctorID());
-            if (doctor.getUserName().toLowerCase().contains(searchText)) {
+            if (doctor.getUserName().toLowerCase().contains(searchText) && query.getPatientID().equals(currentPatient.getId())) {
                 filteredQueries.add(query);
             }
         }
@@ -313,6 +317,11 @@ public class DashboardPatient {
         cardPanel.revalidate();
         cardPanel.repaint();
     }
+
+
+	public JFrame getFrame() {
+		return frame;
+	}
     
 
 }

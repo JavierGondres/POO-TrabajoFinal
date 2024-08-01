@@ -3,16 +3,13 @@ package backend.controller;
 import backend.classes.*;
 import backend.classes.Record;
 import backend.enums.*;
-import backend.utils.IdGenerator;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class HospitalController {
@@ -28,6 +25,7 @@ public class HospitalController {
     private Specialty specialty;
     private AccessType access;
     private Patient currentPatient;
+    private String currentUserId;
 
     public MedicalEmployee getCurrentMedicalEmployee() {
         return currentMedicalEmployee;
@@ -53,6 +51,7 @@ public class HospitalController {
                 1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"), QueryTime.THIRTY_MINUTES, 200);
         this.patients.add(currentPatient);
         this.employees.add(currentMedicalEmployee);
+        createQuery("hola", "999", "1", 5F, new Date(), null, LocalTime.NOON, LocalTime.MIDNIGHT);
     }
 
     public static HospitalController getInstance() {
@@ -61,7 +60,45 @@ public class HospitalController {
         }
         return instance;
     }
+    
+    public String loginUser(String username, String password) {
+    	for(Patient p: patients) {
+    		if(p.getUserName().equals(username) && p.getPassword().equals(password)) {
+    			setAccessType(AccessType.BAJO);
+    			currentUserId = p.getId();
+    			currentPatient = p;
+    			return currentUserId;
+    		}
+    	}
+    	for(Employee e: employees) {
+    		if(e.getUserName().equals(username) && e.getPassword().equals(password)) {
+    			if(e instanceof MedicalEmployee) setAccessType(AccessType.MEDIO);
+    			else setAccessType(AccessType.ALTO);
+    			currentUserId = e.getId();
+    			return currentUserId;
+    		}
+    	}
+    	return null;
+    }
+    
+    public User getCurrentUser() {
+    	return findUserById(currentUserId);
+    }
 
+    public User findUserById(String Id) {
+    	for(Patient p: patients) {
+    		if(p.getId().equals(Id)) {
+    			return p;
+    		}
+    	}
+    	for(Employee e: employees) {
+    		if(e.getId().equals(Id)) {
+    			return e; 
+    		}
+    	}
+    	return null;
+    }
+    
     public void addEmployee(Employee employee) {
         this.employees.add(employee);
     }
@@ -459,8 +496,6 @@ public class HospitalController {
     }
 
     public String serializeToJson() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String currentDate = dateFormat.format(new Date());
 
         String employeesJson = employees.stream()
                 .map(Employee::serializeToJson) // Necesitarás implementar esto en la clase Employee
