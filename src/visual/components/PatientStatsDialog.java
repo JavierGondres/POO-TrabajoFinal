@@ -27,9 +27,6 @@ import backend.classes.Patient;
 
 public class PatientStatsDialog extends JDialog {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private static final int WIDTH = 850;
     private static final int HEIGHT = 650;

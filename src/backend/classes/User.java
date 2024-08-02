@@ -78,6 +78,10 @@ public abstract class User {
         return profilePicture;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public void setProfilePicture(File profilePicture) {
         this.profilePicture = profilePicture;
     }

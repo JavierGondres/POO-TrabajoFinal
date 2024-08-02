@@ -121,6 +121,7 @@ public class Query {
         String queryTimeString = (queryTime != null) ? queryTime.name() : "null";
 
         return "{"
+                + "Query: "
                 + "\"id\":\"" + id + "\","
                 + "\"patientID\":\"" + patientID + "\","
                 + "\"doctorID\":\"" + doctorID + "\","

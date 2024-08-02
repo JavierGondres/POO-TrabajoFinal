@@ -41,7 +41,6 @@ public class DashboardPatient {
     private MainPanel mainPanel;
     private Patient currentPatient;
 
-
     public static void main(String[] args) {
 
         try {
@@ -52,7 +51,6 @@ public class DashboardPatient {
         }
 
     }
-
 
     public DashboardPatient() {
     	currentPatient = HospitalController.getInstance().getCurrentPatient();
@@ -77,15 +75,27 @@ public class DashboardPatient {
         JButton perfilButton = new JButton("Perfil");
         perfilButton.addActionListener(e -> renderScreen(DashboardPatientScreens.PROFILE));
         buttonInfoList.add(new SliderPanel.ButtonInfo(perfilButton, null));
+        perfilButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               CustomizePatient customizePatient = new CustomizePatient();
+                customizePatient.setVisible(true);
+
+            }
+        });
 
         JButton ajustesButton = new JButton("Ajustes");
         ajustesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
         buttonInfoList.add(new SliderPanel.ButtonInfo(ajustesButton, null));
+        ajustesButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                PatientSettings patientSettings = new PatientSettings();
+                patientSettings.setVisible(true);
+            }
+        });
 
         sliderPanel = new SliderPanel("Hospital", buttonInfoList);
         sliderPanel.setBounds(5, 26, 209, 883);
         frame.getContentPane().add(sliderPanel);
-
 
         mainPanel = new MainPanel();
         frame.getContentPane().add(mainPanel);
@@ -96,13 +106,13 @@ public class DashboardPatient {
     private void initializeDummyData() {
         ArrayList<Specialty> especialidades = new ArrayList<>();
         especialidades.add(Specialty.EMERGENCY_MEDICINE);
-        MedicalEmployee doctor1 = new MedicalEmployee("1", "Javier1", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(9,0), LocalTime.of(15, 30), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor1 = new MedicalEmployee("1", "Javier", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(9,0), LocalTime.of(15, 30), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor2 = new MedicalEmployee("2", "Javier2", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(12,0), LocalTime.of(15, 30), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor3 = new MedicalEmployee("3", "Javier3", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(7, 0), LocalTime.of(20,0), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor4 = new MedicalEmployee("4", "Javier4", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor5 = new MedicalEmployee("5", "Javier5", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor6 = new MedicalEmployee("6", "Javier6", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
-        MedicalEmployee doctor7 = new MedicalEmployee("7", "Javier7", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor7 = new MedicalEmployee("7", "Leo", "Abreu", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
 
         Query query1 = new Query("1", currentPatient.getId(), "1", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
         Query query2 = new Query("1", currentPatient.getId(), "2", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
@@ -318,24 +328,8 @@ public class DashboardPatient {
         cardPanel.repaint();
     }
 
-
 	public JFrame getFrame() {
 		return frame;
 	}
-    
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

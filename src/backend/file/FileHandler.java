@@ -31,6 +31,18 @@ public class FileHandler implements FileOperations {
         Files.delete(Paths.get(filePath));
     }
 
+    @Override
+    public void appendToFile(String filePath, String content) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+            writer.write(content);
+            writer.newLine();
+            writer.flush();
+        } catch (IOException e) {
+            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+            throw e;
+        }
+    }
+
     public void sendFile(String filePath, String serverAddress, int port) throws IOException {
         try (Socket socket = new Socket(serverAddress, port);
              FileInputStream fileInputStream = new FileInputStream(filePath);

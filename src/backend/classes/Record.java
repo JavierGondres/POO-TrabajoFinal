@@ -155,6 +155,7 @@ public class Record {
         String lastModificationDate = (lastModification != null) ? dateFormat.format(lastModification) : "null";
 
         return "{"
+                + "Record: "
                 + "\"patientId\":\"" + patientId + "\","
                 + "\"symptoms\":\"" + symptoms + "\","
                 + "\"description\":\"" + description + "\","

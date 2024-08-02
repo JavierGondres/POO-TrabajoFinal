@@ -57,6 +57,7 @@ public class Vaccine {
 
     public String serializeToJson() {
         return "{"
+                + "Vaccine: "
                 + "\"id\":\"" + id + "\","
                 + "\"name\":\"" + name + "\","
                 + "\"diseaseId\":\"" + diseaseId + "\","

@@ -51,6 +51,7 @@ public class Disease {
         String priorityStr = (priority != null) ? priority.name() : "null";
 
         return "{"
+                + "Disease: "
                 + "\"id\":\"" + id + "\","
                 + "\"name\":\"" + name + "\","
                 + "\"isVaccinable\":" + isVaccinable + ","
