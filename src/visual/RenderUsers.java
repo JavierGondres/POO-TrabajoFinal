@@ -59,6 +59,23 @@ public class RenderUsers extends JDialog {
         this.creationAvailable = creationAvailable;
         initializeUI();
         renderCards(userTypeToRender);
+
+        if (creationAvailable) {
+            createUserBtn.addActionListener(e -> {
+                UpdateCreateMedicalEmployee dialog = new UpdateCreateMedicalEmployee(this, null);
+                dialog.setModal(true);
+                dialog.setVisible(true);
+
+                MedicalEmployee newDoctor = dialog.getNewMedicalEmployee();
+                if (newDoctor != null) {
+                    addUser(newDoctor);
+                    HospitalController.getInstance().addEmployee(newDoctor);
+                }
+            });
+
+        } else {
+            createUserBtn.setVisible(false);
+        }
     }
 
     private void initializeUI() {
@@ -189,6 +206,8 @@ public class RenderUsers extends JDialog {
 
     public void addUser(User user) {
         users.add(user);
+        HospitalController.getInstance().addEmployee((Employee) user);
+        //HospitalController.getInstance().saveDataToFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt");
         refreshCardsPanel();
     }
 
@@ -220,7 +239,7 @@ public class RenderUsers extends JDialog {
             return new UserCard("/assets/images/cita-medica.png", user.getUserName());
         }
     }
-    
+
     private String formatSpecialty(Specialty specialty) {
         return specialty.name().replace('_', ' ').toLowerCase();
     }

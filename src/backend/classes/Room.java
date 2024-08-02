@@ -65,6 +65,7 @@ public class Room {
         String formattedDate = (date != null) ? dateFormat.format(date) : "null";
 
         return "{"
+                + "Room: "
                 + "\"id\":\"" + id + "\","
                 + "\"patientID\":\"" + patientID + "\","
                 + "\"doctorID\":\"" + doctorID + "\","

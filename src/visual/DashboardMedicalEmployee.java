@@ -53,9 +53,6 @@ public class DashboardMedicalEmployee {
     private MainPanel mainPanel;
     private MedicalEmployee currentMedicalEmployee;
 
-    /**
-     * Launch the application.
-     */
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -69,9 +66,6 @@ public class DashboardMedicalEmployee {
         });
     }
 
-    /**
-     * Create the application.
-     */
     public DashboardMedicalEmployee() {
         currentMedicalEmployee = HospitalController.getInstance().getCurrentMedicalEmployee();
         frame = new JFrame();
@@ -103,7 +97,6 @@ public class DashboardMedicalEmployee {
                         UserType.PATIENT,
                         null,
                         user -> {
-
                             ArrayList<JButton> buttonsCard = generateUserCardOptions((Patient)user);
                             UserCardOptions userCardOptions = new UserCardOptions(buttonsCard);
                             userCardOptions.setModal(true);
@@ -111,7 +104,6 @@ public class DashboardMedicalEmployee {
                         },
                         false
                 );
-
                 renderPatients.setModal(true);
                 renderPatients.setVisible(true);
             }
@@ -222,8 +214,6 @@ public class DashboardMedicalEmployee {
             record.setVaccines(vaccines);
             HospitalController.getInstance().updateRecord(patient1.getId(), record);
         }
-
-
     }
 
     private void renderScreen(DashboardMedicalEmployeeScreens screen) {

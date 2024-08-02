@@ -59,6 +59,7 @@ public class AdministrativeEmployee extends Employee {
         String shiftEnds = (this.getShiftEnds() != null) ? this.getShiftEnds().toString() : "null";
 
         return "{"
+                + "Administrative Employee: "
                 + "\"id\":\"" + getId() + "\","
                 + "\"userName\":\"" + getUserName() + "\","
                 + "\"lastName\":\"" + getLastName() + "\","

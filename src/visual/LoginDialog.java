@@ -1,5 +1,6 @@
 package visual;
 
+import backend.file.FileHandler;
 import visual.utils.*;
 import visual.utils.Animations.AnimationCallback;
 
@@ -11,6 +12,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.Calendar;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -55,7 +57,9 @@ public class LoginDialog extends JFrame implements AnimationCallback {
 	private JLabel REGISTER_LABEL;
 	private JLayeredPane layeredPane;
 	private JLayeredPane layeredPane_1;
-	
+	private FileHandler fileHandler;
+	private String filePath;
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -72,6 +76,8 @@ public class LoginDialog extends JFrame implements AnimationCallback {
 	public LoginDialog() {
 		this.setBounds(0, 0, 995, 650);
 		this.setLocationRelativeTo(null);
+		this.fileHandler = new FileHandler();
+		this.filePath = "C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt";
 		getContentPane().setLayout(null);
 		layeredPaneB.setOpaque(true);
 		layeredPaneB.setBounds(0, 0, 979, 626);
@@ -332,55 +338,68 @@ public class LoginDialog extends JFrame implements AnimationCallback {
             	}
                 setCursor(Cursor.getDefaultCursor());
             }
-            @Override
+            @Override //Call the Dashboards
             public void mouseClicked(MouseEvent e) {
                 if (!isSelected) {
                     clearRegistrationFields();
                     setEditableRegistrationFields(false);
-                    String userId = HospitalController.getInstance().loginUser(usernameField.getText(), new String(passwordField.getPassword()));
-                    if (userId != null) {
+					String userId = HospitalController.getInstance().loginUser(usernameField.getText(), new String(passwordField.getPassword()));
+                    if (userId != null) { //Si el usuario es un paciente
+						HospitalController.getInstance().loadDataFromFile(filePath);
                         if (HospitalController.getInstance().findUserById(userId) instanceof Patient) {
                             DashboardPatient dp = new DashboardPatient();
                             dp.getFrame().setVisible(true);
                             dispose();
                         }
-                        else if(HospitalController.getInstance().findUserById(userId) instanceof MedicalEmployee) {
+                        else if(HospitalController.getInstance().findUserById(userId) instanceof MedicalEmployee) { //Si el usuario es un doctor
                         	DashboardMedicalEmployee dm = new DashboardMedicalEmployee();
                         	dm.getFrame().setVisible(true);
                         	dispose();
                         }
+						else if (HospitalController.getInstance().findUserById(userId) instanceof AdministrativeEmployee) { //Si el usuario es un administrador
+							DashboardAdministrative da = new DashboardAdministrative();
+							da.getFrame().setVisible(true);
+							dispose();
+						}
+
                     } else {
                         JOptionPane.showMessageDialog(LoginDialog.this, "Nombre de usuario o contraseña incorrectos.", "Error de Login", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
+					//Login del usuario
                     if (usernameField.getText().isEmpty() || lastnameField.getText().isEmpty() || new String(passwordField.getPassword()).isEmpty() ||
                         cbxMonth.getSelectedItem() == null || daySpinner.getValue() == null || yearSpinner.getValue() == null) {
                         JOptionPane.showMessageDialog(LoginDialog.this, "Por favor, complete todos los campos.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
                     } else {
                         Calendar c = Calendar.getInstance();
                         c.set((int) yearSpinner.getValue(), cbxMonth.getSelectedIndex(), (int) daySpinner.getValue());
-                        HospitalController.getInstance().addPatient(new Patient(IdGenerator.generarID(3), usernameField.getText(), lastnameField.getText(), new String(passwordField.getPassword()), c.getTime(), 0, null, 0, 0));
+                        Patient patient = new Patient(IdGenerator.generarID(), usernameField.getText(), lastnameField.getText(), new String(passwordField.getPassword()), c.getTime(), 0, null, 0, 0);
+						HospitalController.getInstance().addPatient(patient);
 
                         String loginId = HospitalController.getInstance().loginUser(usernameField.getText(), new String(passwordField.getPassword()));
                         if (loginId != null) {
                             if (HospitalController.getInstance().findUserById(loginId) instanceof Patient) {
+								try {
+									//fileHandler.appendToFile(filePath, patient.serializeToJson());
+									fileHandler.appendToFile(filePath, HospitalController.getInstance().serializeToJson());
+									HospitalController.getInstance().saveDataToFile(filePath);
+								}catch (IOException ex){
+									ex.printStackTrace();
+									JOptionPane.showMessageDialog(LoginDialog.this, "No se pudo registrar el usuario.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
+								}
                                 DashboardPatient dp = new DashboardPatient();
                                 dp.getFrame().setVisible(true);
                                 dispose();
                             }
                         } else {
-
                             JOptionPane.showMessageDialog(LoginDialog.this, "No se pudo registrar el usuario. Inténtelo de nuevo.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
                         }
-                        
                     }
                 }
                 setCursor(Cursor.getDefaultCursor());
             }
-
 		});
-		
-		
+
 		loginToggle.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -528,7 +547,6 @@ public class LoginDialog extends JFrame implements AnimationCallback {
 	    yearSpinner.setEnabled(editable);
 	}
 
-	
 	private void clearRegistrationFields() {
 	    lastnameField.setText("");
 	    cbxMonth.setSelectedIndex(0);
@@ -569,5 +587,4 @@ public class LoginDialog extends JFrame implements AnimationCallback {
     private static boolean isLeapYear(int year) {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     }
-	
 }

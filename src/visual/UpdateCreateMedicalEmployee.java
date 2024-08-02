@@ -1,17 +1,19 @@
 package visual;
 
+import backend.controller.HospitalController;
+import backend.file.FileHandler;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.io.File;
+import java.util.stream.Collectors;
 import backend.classes.MedicalEmployee;
 import backend.enums.QueryTime;
 import backend.enums.Specialty;
@@ -29,19 +31,22 @@ public class UpdateCreateMedicalEmployee extends JDialog {
     private CustomTextField fieldNombre = new CustomTextField();
     private JDateChooser dateChooser = new JDateChooser();
     private JButton cancelButton = new JButton("Cerrar");
-    private CustomTextField fieldID = new CustomTextField(); 
+    private CustomTextField fieldID = new CustomTextField();
     private JSpinner shiftStartSpinner = new JSpinner(new SpinnerDateModel());
     private JSpinner shiftEndSpinner = new JSpinner(new SpinnerDateModel());
     private CustomTextField fieldContrasenia = new CustomTextField();
     private CustomTextField fieldLastName = new CustomTextField();
     private MedicalEmployee medicalEmployee;
     private JComboBox<QueryTime> comboBoxQueryTime = new JComboBox<>();
-    private JList<Specialty> listSpecialties;
+    private JList<String> listSpecialties = new JList<String>();
     private DefaultListModel<String> specialtiesModel = new DefaultListModel<>();
-    
+    private FileHandler fileHandler;
+    private String filePath;
+    private HospitalController hospitalController;
+
     public static void main(String[] args) {
         try {
-            UpdateCreateMedicalEmployee dialog = new UpdateCreateMedicalEmployee(null);
+            UpdateCreateMedicalEmployee dialog = new UpdateCreateMedicalEmployee(null, null);
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
@@ -49,8 +54,11 @@ public class UpdateCreateMedicalEmployee extends JDialog {
         }
     }
 
-    public UpdateCreateMedicalEmployee(MedicalEmployee medicalEmployee) {
-        this.medicalEmployee = medicalEmployee; 
+    public UpdateCreateMedicalEmployee(RenderUsers parent, MedicalEmployee employee) {
+        super(parent, "Agregar/Actualizar Empleado Médico", true);
+        fileHandler = new FileHandler();
+        this.filePath = "C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt";
+        this.medicalEmployee = employee;
         initializeForm();
         setBounds(100, 100, 602, 749);
         getContentPane().setLayout(new BorderLayout());
@@ -106,7 +114,7 @@ public class UpdateCreateMedicalEmployee extends JDialog {
         fieldContrasenia.setBounds(109, 232, 167, 22);
         contentPanel.add(fieldContrasenia);
 
-        JLabel lblPassword = new JLabel("Contrase\u00F1a:");
+        JLabel lblPassword = new JLabel("Contraseña:");
         lblPassword.setForeground(new Color(15, 28, 48));
         lblPassword.setFont(lblPassword.getFont().deriveFont(14f));
         lblPassword.setBounds(12, 230, 89, 25);
@@ -118,19 +126,17 @@ public class UpdateCreateMedicalEmployee extends JDialog {
         especialidadeslbl.setBounds(12, 342, 120, 25);
         contentPanel.add(especialidadeslbl);
 
-
         Arrays.stream(Specialty.values()).forEach(specialty -> specialtiesModel.addElement(specialty.name()));
 
-        JList<String> listSpecialties = new JList<>(specialtiesModel);
+        listSpecialties.setModel(specialtiesModel);
         listSpecialties.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-        // Envuelve el JList en un JScrollPane
         JScrollPane scrollPane = new JScrollPane(listSpecialties);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBounds(133, 345, 156, 133);
         contentPanel.add(scrollPane);
 
-        JLabel lblQuery = new JLabel("Duracion de las citas:");
+        JLabel lblQuery = new JLabel("Duración de las citas:");
         lblQuery.setForeground(new Color(15, 28, 48));
         lblQuery.setFont(lblQuery.getFont().deriveFont(14f));
         lblQuery.setBounds(12, 491, 150, 25);
@@ -190,7 +196,7 @@ public class UpdateCreateMedicalEmployee extends JDialog {
         labelLastName.setBounds(12, 186, 67, 25);
         contentPanel.add(labelLastName);
 
-        fieldLastName.setText((String) null);
+        fieldLastName.setText("");
         fieldLastName.setColumns(10);
         fieldLastName.setBounds(109, 188, 167, 22);
         contentPanel.add(fieldLastName);
@@ -206,14 +212,66 @@ public class UpdateCreateMedicalEmployee extends JDialog {
             }
         });
 
-        JButton buttonOk = new JButton("Crear");
+        JButton buttonOk = new JButton();
+        if (medicalEmployee == null) {
+            fieldID.setText(IdGenerator.generarID());
+            buttonOk.setText("Crear");
+        } else {
+            lblTitle.setText("Actualizar");
+            buttonOk.setText("Actualizar");
+        }
+
         buttonOk.setActionCommand("OK");
         buttonPane.add(buttonOk);
         buttonPane.add(cancelButton);
 
         buttonOk.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Specialty[] selectedSpecialties = listSpecialties.getSelectedValuesList().toArray(new Specialty[0]);
+                String id = fieldID.getText();
+                String name = fieldNombre.getText();
+                String lastName = fieldLastName.getText();
+                String password = fieldContrasenia.getText();
+                java.util.Date birthDate = dateChooser.getDate();
+                List<String> selectedSpecialtyNames = listSpecialties.getSelectedValuesList();
+
+                List<Specialty> selectedSpecialties = selectedSpecialtyNames.stream()
+                        .map(choosen -> Specialty.valueOf(choosen))
+                        .collect(Collectors.toList());
+
+                Specialty[] specialtiesArray = selectedSpecialties.toArray(new Specialty[0]);
+
+                QueryTime queryTime = (QueryTime) comboBoxQueryTime.getSelectedItem();
+                LocalTime shiftStart = ((SpinnerDateModel) shiftStartSpinner.getModel()).getDate().toInstant()
+                        .atZone(java.time.ZoneId.systemDefault()).toLocalTime();
+                LocalTime shiftEnd = ((SpinnerDateModel) shiftEndSpinner.getModel()).getDate().toInstant()
+                        .atZone(java.time.ZoneId.systemDefault()).toLocalTime();
+                float consultationPrice = ((Number) precioField.getValue()).floatValue();
+
+                if (medicalEmployee == null) {
+                    medicalEmployee = new MedicalEmployee(id, name, lastName, password, birthDate, consultationPrice,
+                            new ArrayList<>(Arrays.asList(specialtiesArray)), shiftStart, shiftEnd,
+                            new File("C:\\Users\\Scarlet\\Downloads\\Desktop Photos\\universe.png"), queryTime, 100);
+                    hospitalController.getInstance().addEmployee(medicalEmployee);
+
+                } else {
+                    medicalEmployee.setUserName(name);
+                    medicalEmployee.setLastName(lastName);
+                    medicalEmployee.setPassword(password);
+                    medicalEmployee.setBirthday(birthDate);
+                    medicalEmployee.setSpecialities(new ArrayList<>(Arrays.asList(specialtiesArray)));
+                    medicalEmployee.setQueryTime(queryTime);
+                    medicalEmployee.setShiftStart(String.valueOf(shiftStart));
+                    medicalEmployee.setShiftEnd(String.valueOf(shiftEnd));
+                    hospitalController.addEmployee(medicalEmployee);
+                }
+                try {
+                    fileHandler.appendToFile(filePath, hospitalController.getInstance().serializeToJson());
+                    HospitalController.getInstance().saveDataToFile(filePath);
+                    dispose();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(UpdateCreateMedicalEmployee.this, "Error al guardar los datos.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
     }
@@ -233,15 +291,19 @@ public class UpdateCreateMedicalEmployee extends JDialog {
 
         List<Specialty> specialities = new ArrayList<>(medicalEmployee.getSpecialities());
         List<String> specialtiesList = specialities.stream()
-                                                   .map(Enum::name)
-                                                   .collect(Collectors.toList());
+                .map(Enum::name)
+                .collect(Collectors.toList());
         int[] selectedIndices = specialtiesList.stream()
-                                               .mapToInt(specialty -> specialtiesModel.indexOf(specialty))
-                                               .toArray();
+                .mapToInt(specialty -> specialtiesModel.indexOf(specialty))
+                .toArray();
         listSpecialties.setSelectedIndices(selectedIndices);
 
         comboBoxQueryTime.setSelectedItem(medicalEmployee.getQueryTime());
-        shiftStartSpinner.setValue(medicalEmployee.getShiftStart());
-        shiftEndSpinner.setValue(medicalEmployee.getShiftEnd());
+        shiftStartSpinner.setValue(java.util.Date.from(medicalEmployee.getShiftStart().atDate(java.time.LocalDate.now()).atZone(java.time.ZoneId.systemDefault()).toInstant()));
+        shiftEndSpinner.setValue(java.util.Date.from(medicalEmployee.getShiftEnd().atDate(java.time.LocalDate.now()).atZone(java.time.ZoneId.systemDefault()).toInstant()));
+    }
+
+    public MedicalEmployee getNewMedicalEmployee() {
+            return medicalEmployee;
     }
 }

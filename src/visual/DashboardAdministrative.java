@@ -65,9 +65,6 @@ public class DashboardAdministrative {
     private MainPanel mainPanel;
     private MedicalEmployee currentMedicalEmployee;
 
-    /**
-     * Launch the application.
-     */
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -81,9 +78,6 @@ public class DashboardAdministrative {
         });
     }
 
-    /**
-     * Create the application.
-     */
     public DashboardAdministrative() {
         currentMedicalEmployee = HospitalController.getInstance().getCurrentMedicalEmployee();
         frame = new JFrame();
@@ -93,7 +87,6 @@ public class DashboardAdministrative {
         frame.getContentPane().setBackground(Color.decode("#668dc0"));
         frame.setLocationRelativeTo(null);
         frame.getContentPane().setLayout(null);
-
         initializeDummyData();
         rooms = HospitalController.getInstance().getRooms();
 
@@ -125,20 +118,20 @@ public class DashboardAdministrative {
             }
         });
         buttonInfoList.add(new SliderPanel.ButtonInfo(myPatientsButton, null));
-        
+
         JButton doctorsButton = new JButton("Doctores");
         doctorsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // Renderizar la lista de médicos
                 RenderUsers renderPatients = new RenderUsers(
                         HospitalController.getInstance().getMedicalEmployees(),
                         UserType.MEDICAL_EMPLOYEE,
                         null,
                         user -> {
-
-//                            ArrayList<JButton> buttonsCard = generateUserCardOptions((Patient) user);
-//                            UserCardOptions userCardOptions = new UserCardOptions(buttonsCard);
-//                            userCardOptions.setModal(true);
-//                            userCardOptions.setVisible(true);
+//                            // Crear o actualizar un médico
+//                            UpdateCreateMed`icalEmployee updateCreateEmployee = new UpdateCreateMedicalEmployee((MedicalEmployee) user);
+//                            updateCreateEmployee.setModal(true);
+//                            updateCreateEmployee.setVisible(true);
                         },
                         true
                 );
@@ -278,8 +271,6 @@ public class DashboardAdministrative {
             record.setVaccines(vaccines);
             HospitalController.getInstance().updateRecord(patient1.getId(), record);
         }
-
-
     }
 
     private void renderScreen(DashboardAdministrativeScreens screen) {
@@ -376,7 +367,7 @@ public class DashboardAdministrative {
         Font newBalanceFont = currentBalanceFont.deriveFont(16f);
         lblBalance.setFont(newBalanceFont);
 
-        JLabel lblNombre = new JLabel("Javier Gondres");
+        JLabel lblNombre = new JLabel("Javier Emilio");
         lblNombre.setBounds(229, 41, 184, 31);
         lblNombre.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblNombre);
@@ -460,6 +451,10 @@ public class DashboardAdministrative {
         }
         cardPanel.revalidate();
         cardPanel.repaint();
+    }
+
+    public JFrame getFrame() {
+        return frame;
     }
 
 }

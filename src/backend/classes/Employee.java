@@ -64,6 +64,8 @@ public abstract class Employee extends User {
         String shiftEndStr = (this.shiftEnd != null) ? this.shiftEnd.format(timeFormatter) : "null";
 
         return "{"
+                + "Employee: "
+                + "\"type\":\"" + this.getClass().getSimpleName() + "\","
                 + "\"id\":\"" + getId() + "\","
                 + "\"userName\":\"" + getUserName() + "\","
                 + "\"lastName\":\"" + getLastName() + "\","
