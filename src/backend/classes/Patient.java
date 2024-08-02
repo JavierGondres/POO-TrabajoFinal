@@ -41,7 +41,6 @@ public class Patient extends User {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String birthday = dateFormat.format(this.getBirthday()); // Asume que getBirthday() es un método en User
 
-        // La ruta del archivo se convierte en una cadena
         String profilePicturePath = (this.getProfilePicture() != null) ? this.getProfilePicture().getAbsolutePath() : "null";
 
         return "{"

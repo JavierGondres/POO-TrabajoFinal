@@ -526,19 +526,19 @@ public class HospitalController {
                 .collect(Collectors.joining(",", "[", "]"));
 
         return "{"
-                + "\"employees\":" + employeesJson + ","
-                + "\"patients\":" + patientsJson + ","
-                + "\"rooms\":" + roomsJson + ","
-                + "\"queries\":" + queriesJson + ","
-                + "\"records\":" + recordsJson + ","
-                + "\"vaccines\":" + vaccinesJson + ","
-                + "\"diseases\":" + diseasesJson + ","
-                + "\"priority\":\"" + priority + "\","
-                + "\"genre\":\"" + genre + "\","
-                + "\"specialty\":\"" + specialty + "\","
-                + "\"accessType\":\"" + access + "\","
-                + "\"currentPatient\":" + currentPatient.serializeToJson() + ","
-                + "\"currentMedicalEmployee\":" + currentMedicalEmployee.serializeToJson()
+                + "\"Employees\":" + employeesJson + ","
+                + "\"Patients\":" + patientsJson + ","
+                + "\"Rooms\":" + roomsJson + ","
+                + "\"Queries\":" + queriesJson + ","
+                + "\"Records\":" + recordsJson + ","
+                + "\"Vaccines\":" + vaccinesJson + ","
+                + "\"Diseases\":" + diseasesJson + ","
+                + "\"Priority\":\"" + priority + "\","
+                + "\"Genre\":\"" + genre + "\","
+                + "\"Specialty\":\"" + specialty + "\","
+                + "\"AccessType\":\"" + access + "\","
+                + "\"CurrentPatient\":" + currentPatient.serializeToJson() + ","
+                + "\"CurrentMedicalEmployee\":" + currentMedicalEmployee.serializeToJson()
                 + "}";
     }
 }
