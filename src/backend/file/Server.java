@@ -14,7 +14,13 @@ public class Server {
             while (true) {
                 try (Socket clientSocket = serverSocket.accept();
                      BufferedInputStream in = new BufferedInputStream(clientSocket.getInputStream());
-                     FileOutputStream fileOutputStream = new FileOutputStream(outputFilePath)) {
+                     FileOutputStream fileOutputStream = new FileOutputStream(outputFilePath, true)) {
+
+                    // Verificar si el archivo existe, si no, crearlo
+                    File file = new File(outputFilePath);
+                    if (!file.exists()) {
+                        file.createNewFile();
+                    }
 
                     byte[] buffer = new byte[4096];
                     int bytesRead;

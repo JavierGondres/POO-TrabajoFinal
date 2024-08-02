@@ -359,7 +359,7 @@ public class DashboardAdministrative {
         mainPanel.add(rightPanel);
         rightPanel.setLayout(null);
 
-        JLabel lblBalance = new JLabel("1000 $RD");
+        JLabel lblBalance = new JLabel(HospitalController.getInstance().getCurrentAdminEmployee().getBalance() + " RD$");
         lblBalance.setBounds(229, 85, 154, 16);
         lblBalance.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblBalance);
@@ -367,7 +367,7 @@ public class DashboardAdministrative {
         Font newBalanceFont = currentBalanceFont.deriveFont(16f);
         lblBalance.setFont(newBalanceFont);
 
-        JLabel lblNombre = new JLabel("Javier Emilio");
+        JLabel lblNombre = new JLabel(HospitalController.getInstance().getCurrentAdminEmployee().getUserName());
         lblNombre.setBounds(229, 41, 184, 31);
         lblNombre.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblNombre);

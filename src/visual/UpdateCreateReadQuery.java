@@ -51,10 +51,7 @@ public class UpdateCreateReadQuery extends JDialog {
     private JButton cancelButton = new JButton("Cancelar");
     private UserType userTypeToRender;
     private GeneralCallback callback;
-    
-    /**
-     * Launch the application.
-     */
+
     public static void main(String[] args) {
         try {
             UpdateCreateReadQuery dialog = new UpdateCreateReadQuery(null, null, UserType.MEDICAL_EMPLOYEE);
@@ -65,9 +62,6 @@ public class UpdateCreateReadQuery extends JDialog {
         }
     }
 
-    /**
-     * Create the dialog.
-     */
     public UpdateCreateReadQuery(Query query, GeneralCallback callback, UserType userTypeToRender) {
     	this.userTypeToRender = userTypeToRender;
     	this.callback = callback;

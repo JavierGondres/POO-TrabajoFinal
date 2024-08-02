@@ -388,6 +388,7 @@ public class LoginDialog extends JFrame implements AnimationCallback {
 									JOptionPane.showMessageDialog(LoginDialog.this, "No se pudo registrar el usuario.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
 								}
                                 DashboardPatient dp = new DashboardPatient();
+
                                 dp.getFrame().setVisible(true);
                                 dispose();
                             }

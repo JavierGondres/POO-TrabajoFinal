@@ -17,12 +17,17 @@ public class FileHandler implements FileOperations {
 
     @Override
     public void writeFile(String filePath, String content) throws IOException {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             writer.write(content);
-            writer.flush(); 
+            writer.flush();
         } catch (IOException e) {
             System.err.println("Error al escribir en el archivo: " + e.getMessage());
-            throw e; 
+            throw e;
         }
     }
 
@@ -33,6 +38,12 @@ public class FileHandler implements FileOperations {
 
     @Override
     public void appendToFile(String filePath, String content) throws IOException {
+        // Verificar si el archivo existe, si no, crearlo
+        File file = new File(filePath);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
             writer.write(content);
             writer.newLine();
@@ -63,6 +74,13 @@ public class FileHandler implements FileOperations {
         } catch (IOException e) {
             System.err.println("Error de E/S");
             e.printStackTrace();
+        }
+    }
+
+    void createFileIfNotExists(String filePath) throws IOException {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            file.createNewFile();
         }
     }
 }
