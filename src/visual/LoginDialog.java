@@ -359,7 +359,7 @@ public class LoginDialog extends JFrame implements AnimationCallback {
                     } else {
                         Calendar c = Calendar.getInstance();
                         c.set((int) yearSpinner.getValue(), cbxMonth.getSelectedIndex(), (int) daySpinner.getValue());
-                        HospitalController.getInstance().addPatient(new Patient(IdGenerator.generarID(3), usernameField.getText(), lastnameField.getText(), new String(passwordField.getPassword()), c.getTime(), 0, null, 0, 0));
+                        HospitalController.getInstance().addPatient(new Patient(IdGenerator.generarID(), usernameField.getText(), lastnameField.getText(), new String(passwordField.getPassword()), c.getTime(), 0, null, 0, 0));
 
                         String loginId = HospitalController.getInstance().loginUser(usernameField.getText(), new String(passwordField.getPassword()));
                         if (loginId != null) {

@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
+import static backend.enums.AccessType.ALTO;
+
 public class HospitalController {
     private ArrayList<Employee> employees;
     private ArrayList<Patient> patients;
@@ -26,15 +28,7 @@ public class HospitalController {
     private AccessType access;
     private Patient currentPatient;
     private String currentUserId;
-
-    public MedicalEmployee getCurrentMedicalEmployee() {
-        return currentMedicalEmployee;
-    }
-
-    public void setCurrentMedicalEmployee(MedicalEmployee currentMedicalEmployee) {
-        this.currentMedicalEmployee = currentMedicalEmployee;
-    }
-
+    private AdministrativeEmployee currentAdminEmployee;
     private MedicalEmployee currentMedicalEmployee;
     private static HospitalController instance;
 
@@ -47,8 +41,8 @@ public class HospitalController {
         this.vaccines = new ArrayList<>();
         this.diseases = new ArrayList<>();
         this.currentPatient = new Patient("999", "Javier Emilio", "Gondres", "123456", new Date(), 1000, null, 100, 160);
-        this.currentMedicalEmployee = new MedicalEmployee("1", "Jane", "Doe", "1234", new Date(),
-                1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"), QueryTime.THIRTY_MINUTES, 200);
+        this.currentMedicalEmployee = new MedicalEmployee("1", "Jane", "Doe", "1234", new Date(), 1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt"), QueryTime.THIRTY_MINUTES, 200);
+        this.currentAdminEmployee = new AdministrativeEmployee("2", "Scarlet", "Abreu", "1234", new Date(), 1000, LocalTime.of(8, 0), LocalTime.of(16, 0), ALTO, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt"));
         this.patients.add(currentPatient);
         this.employees.add(currentMedicalEmployee);
         createQuery("hola", "999", "1", 5F, new Date(), null, LocalTime.NOON, LocalTime.MIDNIGHT);
@@ -59,6 +53,22 @@ public class HospitalController {
             instance = new HospitalController();
         }
         return instance;
+    }
+
+    public MedicalEmployee getCurrentMedicalEmployee() {
+        return currentMedicalEmployee;
+    }
+
+    public void setCurrentMedicalEmployee(MedicalEmployee currentMedicalEmployee) {
+        this.currentMedicalEmployee = currentMedicalEmployee;
+    }
+
+    public AdministrativeEmployee getCurrentAdminEmployee() {
+        return currentAdminEmployee;
+    }
+
+    public void setCurrentAdminEmployee(AdministrativeEmployee currentAdminEmployee) {
+        this.currentAdminEmployee = currentAdminEmployee;
     }
     
     public String loginUser(String username, String password) {
@@ -73,7 +83,7 @@ public class HospitalController {
     	for(Employee e: employees) {
     		if(e.getUserName().equals(username) && e.getPassword().equals(password)) {
     			if(e instanceof MedicalEmployee) setAccessType(AccessType.MEDIO);
-    			else setAccessType(AccessType.ALTO);
+    			else setAccessType(ALTO);
     			currentUserId = e.getId();
     			return currentUserId;
     		}

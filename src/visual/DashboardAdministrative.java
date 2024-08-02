@@ -65,9 +65,6 @@ public class DashboardAdministrative {
     private MainPanel mainPanel;
     private MedicalEmployee currentMedicalEmployee;
 
-    /**
-     * Launch the application.
-     */
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -81,9 +78,6 @@ public class DashboardAdministrative {
         });
     }
 
-    /**
-     * Create the application.
-     */
     public DashboardAdministrative() {
         currentMedicalEmployee = HospitalController.getInstance().getCurrentMedicalEmployee();
         frame = new JFrame();
