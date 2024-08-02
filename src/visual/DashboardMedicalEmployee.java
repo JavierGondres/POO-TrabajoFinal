@@ -76,7 +76,10 @@ public class DashboardMedicalEmployee {
         frame.setLocationRelativeTo(null);
         frame.getContentPane().setLayout(null);
 
-        initializeDummyData();
+        if(HospitalController.getInstance().getCurrentUser() == null) {
+            initializeDummyData();
+        }
+
         queries = HospitalController.getInstance().getConsultations();
 
         ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
@@ -389,6 +392,4 @@ public class DashboardMedicalEmployee {
 	public JFrame getFrame() {
 		return frame;
 	}
-
-
 }

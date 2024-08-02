@@ -40,9 +40,11 @@ public class CustomCalendar extends JPanel {
     private List<Date> queryDates;
 
     private Calendar currentCalendar;
+    private User currentUser;
 
     public CustomCalendar(User currentUser) {
         super();
+        this.currentUser = currentUser;
 
         queryDates = new ArrayList<>();
         queries = new ArrayList<>();
@@ -111,8 +113,19 @@ public class CustomCalendar extends JPanel {
         }
     }
 
-    private void updateCalendar() {
+    public void updateCalendar() {
         calendarPanel.removeAll();
+
+        if (currentUser != null) {
+            if (currentUser instanceof Patient) {
+                queries = HospitalController.getInstance().getPatientActiveQueries(currentUser.getId());
+                populateQueryDates(queries);
+            }
+            if (currentUser instanceof MedicalEmployee) {
+                queries = HospitalController.getInstance().getMedicalEmployeeActiveQueries(currentUser.getId());
+                populateQueryDates(queries);
+            }
+        }
 
         int month = currentCalendar.get(Calendar.MONTH);
         int year = currentCalendar.get(Calendar.YEAR);
@@ -146,7 +159,7 @@ public class CustomCalendar extends JPanel {
             JLabel label = createDayLabel(String.valueOf(i));
             if (isQueryScheduled(year, month, i)) {
             	final int ind = i;
-                label.setBackground(Color.MAGENTA);
+                label.setBackground(Color.decode("#AB3130"));
                 label.setForeground(ColorPallete.mainColor_Light);
                 label.addMouseListener(new MouseAdapter() {
                     @Override

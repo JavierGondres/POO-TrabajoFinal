@@ -40,18 +40,17 @@ public class HospitalController {
         this.records = new HashMap<>();
         this.vaccines = new ArrayList<>();
         this.diseases = new ArrayList<>();
+
         loadDataFromFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt");
 
         this.currentPatient = new Patient("999", "Javier Emilio", "Gondres", "123456", new Date(), 1000, null, 100, 160);
         this.currentMedicalEmployee = new MedicalEmployee("1", "Jane", "Doe", "123456", new Date(), 1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"), QueryTime.THIRTY_MINUTES, 200);
-        this.currentAdminEmployee = new AdministrativeEmployee("3", "Scarlet", "Abreu", "123456", new Date(), 1000, LocalTime.of(8, 0), LocalTime.of(16, 0), ALTO, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"));
-
+        this.currentAdminEmployee = new AdministrativeEmployee("3", "Isaac", "Leo", "123456", new Date(), 1000, LocalTime.of(8, 0), LocalTime.of(16, 0), ALTO, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"));
         this.employees.add(currentAdminEmployee);
         this.patients.add(currentPatient);
         this.employees.add(currentMedicalEmployee);
+
         createQuery("hola", "999", "1", 5F, new Date(), null, LocalTime.NOON, LocalTime.MIDNIGHT);
-        //loadMedicalEmployee("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt");
-        //loadPatientsFromFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt");
     }
 
     public static HospitalController getInstance() {
@@ -72,9 +71,15 @@ public class HospitalController {
     	}
     	for(Employee e: employees) {
     		if(e.getUserName().equals(username) && e.getPassword().equals(password)) {
-    			if(e instanceof MedicalEmployee) setAccessType(AccessType.MEDIO);
-    			else setAccessType(ALTO);
-    			currentUserId = e.getId();
+    			if(e instanceof MedicalEmployee) {
+                    setAccessType(AccessType.MEDIO);
+                    setCurrentMedicalEmployee((MedicalEmployee) e);
+                }
+    			else {
+                    setAccessType(ALTO);
+                    setCurrentAdminEmployee((AdministrativeEmployee) e);
+                }
+                currentUserId = e.getId();
     			return currentUserId;
     		}
     	}

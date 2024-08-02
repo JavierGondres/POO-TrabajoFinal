@@ -40,6 +40,7 @@ public class DashboardPatient {
     private SliderPanel sliderPanel;
     private MainPanel mainPanel;
     private Patient currentPatient;
+    private CustomCalendar panel;
 
     public static void main(String[] args) {
 
@@ -244,7 +245,7 @@ public class DashboardPatient {
         Font newNombreFont = currentNombreFont.deriveFont(Font.BOLD, 20f);
         lblNombre.setFont(newNombreFont);
 
-        CustomCalendar panel = new CustomCalendar(HospitalController.getInstance().getCurrentUser());
+        panel = new CustomCalendar(HospitalController.getInstance().getCurrentPatient());
         panel.setBounds(12, 164, 389, 391);
         rightPanel.add(panel);
         JButton btnCreateNewQuery = new JButton("Agendar nueva cita");
@@ -254,7 +255,9 @@ public class DashboardPatient {
                 UpdateCreateReadQuery updateCreateReadQuery = new UpdateCreateReadQuery(null, new backend.interfaces.GeneralCallback() {
                     @Override
                     public void onPressOk() {
+                        System.out.println("Cita creada: o no");
                         filterQueriesByDoctorName();
+                        panel.updateCalendar();
                     }
                 }, UserType.MEDICAL_EMPLOYEE);
                 updateCreateReadQuery.setModal(true);
