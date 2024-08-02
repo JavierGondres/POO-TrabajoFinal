@@ -1,32 +1,18 @@
 package visual;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -44,6 +30,8 @@ import backend.enums.Priority;
 import backend.enums.QueryTime;
 import backend.enums.Specialty;
 import backend.enums.UserType;
+import backend.file.FileHandler;
+import backend.file.Server;
 import backend.interfaces.GeneralCallback;
 import backend.utils.IdGenerator;
 import visual.components.CustomTextField;
@@ -53,6 +41,7 @@ import visual.components.RoomCard;
 import visual.components.RoundedPanel;
 import visual.components.SliderPanel;
 import visual.components.UserCardOptions;
+import visual.utils.ColorPallete;
 
 public class DashboardAdministrative {
 
@@ -390,6 +379,55 @@ public class DashboardAdministrative {
             }
         });
         rightPanel.add(btnCreateRoom);
+
+        JLabel BUTTON_LABEL = new JLabel("Socket");
+        BUTTON_LABEL.setBorder(new CircularBorder(ColorPallete.mainColor_Dark, 3, 84));
+        BUTTON_LABEL.setForeground(ColorPallete.mainColor_Dark);
+        BUTTON_LABEL.setFont(new Font("Segoe Print", Font.BOLD, 14));
+        BUTTON_LABEL.setHorizontalAlignment(SwingConstants.CENTER);
+        BUTTON_LABEL.setBounds(49, 41, 145, 66);
+        BUTTON_LABEL.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                frame.setCursor(Cursor.getDefaultCursor());
+            }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                FileHandler fileHandler = new FileHandler();
+                String filePath = "C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt";
+                new Thread(() -> {
+                    try {
+                        Server.main(null);
+                    } catch (Exception B) {
+                        B.printStackTrace();
+                    }
+                }).start();
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException B) {
+                    B.printStackTrace();
+                }
+
+                String hostname = "localhost";
+                int port = 12345;
+
+                try {
+                    fileHandler.sendFile(filePath, hostname, port);
+                    JOptionPane.showMessageDialog(frame, "Backup enviado", "Socket", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException B) {
+                    B.printStackTrace();
+                    JOptionPane.showMessageDialog(frame, "Error de Backup", "Socket", JOptionPane.ERROR_MESSAGE);
+                }
+                frame.setCursor(Cursor.getDefaultCursor());
+            }
+
+        });
+        rightPanel.add(BUTTON_LABEL);
         
         frame.revalidate();
         frame.repaint();

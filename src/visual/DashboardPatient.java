@@ -9,6 +9,8 @@ import backend.classes.MedicalEmployee;
 import backend.classes.Patient;
 import backend.classes.Query;
 import backend.controller.HospitalController;
+import backend.file.FileHandler;
+import backend.file.Server;
 import visual.components.CustomCalendar;
 import backend.enums.DashboardPatientScreens;
 import backend.enums.QueryTime;
@@ -19,12 +21,14 @@ import visual.components.MainPanel;
 import visual.components.QueryCard;
 import visual.components.RoundedPanel;
 import visual.components.SliderPanel;
+import visual.utils.ColorPallete;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -264,7 +268,56 @@ public class DashboardPatient {
                 updateCreateReadQuery.setVisible(true);
             }
         });
-        
+
+        JLabel BUTTON_LABEL = new JLabel("Socket");
+        rightPanel.add(BUTTON_LABEL);
+        BUTTON_LABEL.setBorder(new CircularBorder(ColorPallete.mainColor_Dark, 3, 84));
+        BUTTON_LABEL.setForeground(ColorPallete.mainColor_Dark);
+        BUTTON_LABEL.setFont(new Font("Segoe Print", Font.BOLD, 14));
+        BUTTON_LABEL.setHorizontalAlignment(SwingConstants.CENTER);
+        BUTTON_LABEL.setBounds(49, 41, 145, 66);
+        BUTTON_LABEL.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                frame.setCursor(Cursor.getDefaultCursor());
+            }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                FileHandler fileHandler = new FileHandler();
+                String filePath = "C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt";
+                new Thread(() -> {
+                    try {
+                        Server.main(null);
+                    } catch (Exception B) {
+                        B.printStackTrace();
+                    }
+                }).start();
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException B) {
+                    B.printStackTrace();
+                }
+
+                String hostname = "localhost";
+                int port = 12345;
+
+                try {
+                    fileHandler.sendFile(filePath, hostname, port);
+                    JOptionPane.showMessageDialog(frame, "Backup enviado", "Socket", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException B) {
+                    B.printStackTrace();
+                    JOptionPane.showMessageDialog(frame, "Error de Backup", "Socket", JOptionPane.ERROR_MESSAGE);
+                }
+                frame.setCursor(Cursor.getDefaultCursor());
+            }
+
+        });
+        rightPanel.add(BUTTON_LABEL);
         rightPanel.add(btnCreateNewQuery);
 
         frame.revalidate();
