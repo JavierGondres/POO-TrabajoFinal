@@ -1,6 +1,7 @@
 package backend.classes;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -49,4 +50,32 @@ public abstract class Employee extends User {
     public abstract float calculateSalary();
 
     public abstract float getDefaultSalary();
+
+    public String serializeToJson() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String birthday = dateFormat.format(this.getBirthday()); // Asume que getBirthday() es un método en User
+
+        // La ruta del archivo se convierte en una cadena
+        String profilePicturePath = (this.getProfilePicture() != null) ? this.getProfilePicture().getAbsolutePath() : "null";
+
+        // Formatear las horas de inicio y fin
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        String shiftStartStr = (this.shiftStart != null) ? this.shiftStart.format(timeFormatter) : "null";
+        String shiftEndStr = (this.shiftEnd != null) ? this.shiftEnd.format(timeFormatter) : "null";
+
+        return "{"
+                + "Employee: "
+                + "\"type\":\"" + this.getClass().getSimpleName() + "\","
+                + "\"id\":\"" + getId() + "\","
+                + "\"userName\":\"" + getUserName() + "\","
+                + "\"lastName\":\"" + getLastName() + "\","
+                + "\"password\":\"" + getPassword() + "\","
+                + "\"birthday\":\"" + birthday + "\","
+                + "\"balance\":" + getBalance() + ","
+                + "\"profilePicture\":\"" + profilePicturePath + "\","
+                + "\"shiftStart\":\"" + shiftStartStr + "\","
+                + "\"shiftEnd\":\"" + shiftEndStr + "\","
+                + "\"workSchedule\":" + calculateWorkSchedule() // Ejemplo de uso de un método para obtener información adicional
+                + "}";
+    }
 }

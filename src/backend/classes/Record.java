@@ -1,5 +1,6 @@
 package backend.classes;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -132,5 +133,37 @@ public class Record {
         return record;
     }
 
+    public String serializeToJson() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+        // Serializar la lista de enfermedades
+        StringBuilder diseasesJson = new StringBuilder("[");
+        for (Disease disease : DiseaseHistory) {
+            diseasesJson.append(disease.serializeToJson()).append(",");
+        }
+        if (!DiseaseHistory.isEmpty()) diseasesJson.setLength(diseasesJson.length() - 1); // Eliminar última coma
+        diseasesJson.append("]");
+
+        // Serializar la lista de vacunas
+        StringBuilder vaccinesJson = new StringBuilder("[");
+        for (Vaccine vaccine : vaccines) {
+            vaccinesJson.append(vaccine.serializeToJson()).append(",");
+        }
+        if (!vaccines.isEmpty()) vaccinesJson.setLength(vaccinesJson.length() - 1); // Eliminar última coma
+        vaccinesJson.append("]");
+
+        String lastModificationDate = (lastModification != null) ? dateFormat.format(lastModification) : "null";
+
+        return "{"
+                + "Record: "
+                + "\"patientId\":\"" + patientId + "\","
+                + "\"symptoms\":\"" + symptoms + "\","
+                + "\"description\":\"" + description + "\","
+                + "\"DiseaseHistory\":" + diseasesJson.toString() + ","
+                + "\"vaccines\":" + vaccinesJson.toString() + ","
+                + "\"weight\":" + weight + ","
+                + "\"height\":" + height + ","
+                + "\"lastModification\":\"" + lastModificationDate + "\""
+                + "}";
+    }
 }

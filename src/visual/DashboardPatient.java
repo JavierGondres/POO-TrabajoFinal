@@ -9,6 +9,9 @@ import backend.classes.MedicalEmployee;
 import backend.classes.Patient;
 import backend.classes.Query;
 import backend.controller.HospitalController;
+import backend.file.FileHandler;
+import backend.file.Server;
+import visual.components.CustomCalendar;
 import backend.enums.DashboardPatientScreens;
 import backend.enums.QueryTime;
 import backend.enums.Specialty;
@@ -18,12 +21,14 @@ import visual.components.MainPanel;
 import visual.components.QueryCard;
 import visual.components.RoundedPanel;
 import visual.components.SliderPanel;
+import visual.utils.ColorPallete;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -39,7 +44,7 @@ public class DashboardPatient {
     private SliderPanel sliderPanel;
     private MainPanel mainPanel;
     private Patient currentPatient;
-
+    private CustomCalendar panel;
 
     public static void main(String[] args) {
 
@@ -52,18 +57,19 @@ public class DashboardPatient {
 
     }
 
-
     public DashboardPatient() {
     	currentPatient = HospitalController.getInstance().getCurrentPatient();
-        frame = new JFrame();
+        System.out.println(currentPatient.getUserName());
+    	frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1382, 778);
         frame.getContentPane().setBackground(Color.decode("#668dc0"));
         frame.setLocationRelativeTo(null);
         frame.getContentPane().setLayout(null);
 
-        initializeDummyData();
-        queries = HospitalController.getInstance().getPatientActiveQueries(currentPatient.getId());
+        if(HospitalController.getInstance().getCurrentUser() == null) initializeDummyData();
+        else System.out.print("Hola usuario");
+        queries = HospitalController.getInstance().getConsultations();
 
         ArrayList<SliderPanel.ButtonInfo> buttonInfoList = new ArrayList<>();
 
@@ -74,15 +80,27 @@ public class DashboardPatient {
         JButton perfilButton = new JButton("Perfil");
         perfilButton.addActionListener(e -> renderScreen(DashboardPatientScreens.PROFILE));
         buttonInfoList.add(new SliderPanel.ButtonInfo(perfilButton, null));
+        perfilButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+               CustomizePatient customizePatient = new CustomizePatient();
+                customizePatient.setVisible(true);
+
+            }
+        });
 
         JButton ajustesButton = new JButton("Ajustes");
         ajustesButton.addActionListener(e -> System.out.println("Ajustes clicked"));
         buttonInfoList.add(new SliderPanel.ButtonInfo(ajustesButton, null));
+        ajustesButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                PatientSettings patientSettings = new PatientSettings();
+                patientSettings.setVisible(true);
+            }
+        });
 
         sliderPanel = new SliderPanel("Hospital", buttonInfoList);
         sliderPanel.setBounds(5, 26, 209, 883);
         frame.getContentPane().add(sliderPanel);
-
 
         mainPanel = new MainPanel();
         frame.getContentPane().add(mainPanel);
@@ -93,13 +111,13 @@ public class DashboardPatient {
     private void initializeDummyData() {
         ArrayList<Specialty> especialidades = new ArrayList<>();
         especialidades.add(Specialty.EMERGENCY_MEDICINE);
-        MedicalEmployee doctor1 = new MedicalEmployee("1", "Javier1", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(9,0), LocalTime.of(15, 30), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor1 = new MedicalEmployee("1", "Javier", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(9,0), LocalTime.of(15, 30), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor2 = new MedicalEmployee("2", "Javier2", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(12,0), LocalTime.of(15, 30), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor3 = new MedicalEmployee("3", "Javier3", "opa", "123456", new Date(), 100, especialidades, LocalTime.of(7, 0), LocalTime.of(20,0), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor4 = new MedicalEmployee("4", "Javier4", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor5 = new MedicalEmployee("5", "Javier5", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
         MedicalEmployee doctor6 = new MedicalEmployee("6", "Javier6", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
-        MedicalEmployee doctor7 = new MedicalEmployee("7", "Javier7", "opa", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
+        MedicalEmployee doctor7 = new MedicalEmployee("7", "Leo", "Abreu", "123456", new Date(), 100, especialidades, LocalTime.now(), LocalTime.now(), null, QueryTime.THIRTY_MINUTES, 400);
 
         Query query1 = new Query("1", currentPatient.getId(), "1", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
         Query query2 = new Query("1", currentPatient.getId(), "2", 100.0f, new Date(), true, QueryTime.THIRTY_MINUTES, LocalTime.of(10, 0), LocalTime.of(18, 0));
@@ -214,7 +232,7 @@ public class DashboardPatient {
         mainPanel.add(rightPanel);
         rightPanel.setLayout(null);
 
-        JLabel lblBalance = new JLabel("1000 $RD");
+        JLabel lblBalance = new JLabel(HospitalController.getInstance().getCurrentPatient().getBalance() + " $RD");
         lblBalance.setBounds(229, 85, 154, 16);
         lblBalance.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblBalance);
@@ -222,15 +240,16 @@ public class DashboardPatient {
         Font newBalanceFont = currentBalanceFont.deriveFont(16f);
         lblBalance.setFont(newBalanceFont);
 
-        JLabel lblNombre = new JLabel("Javier Gondres");
+        JLabel lblNombre = new JLabel(HospitalController.getInstance().getCurrentUser().getUserName() + " " + HospitalController.getInstance().getCurrentUser().getLastName());
         lblNombre.setBounds(229, 41, 184, 31);
+        lblNombre.setPreferredSize(new Dimension (184, 31));
         lblNombre.setForeground(Color.decode("#668dc0"));
         rightPanel.add(lblNombre);
         Font currentNombreFont = lblNombre.getFont();
         Font newNombreFont = currentNombreFont.deriveFont(Font.BOLD, 20f);
         lblNombre.setFont(newNombreFont);
 
-        JPanel panel = new JPanel();
+        panel = new CustomCalendar(HospitalController.getInstance().getCurrentPatient());
         panel.setBounds(12, 164, 389, 391);
         rightPanel.add(panel);
         JButton btnCreateNewQuery = new JButton("Agendar nueva cita");
@@ -240,14 +259,65 @@ public class DashboardPatient {
                 UpdateCreateReadQuery updateCreateReadQuery = new UpdateCreateReadQuery(null, new backend.interfaces.GeneralCallback() {
                     @Override
                     public void onPressOk() {
+                        System.out.println("Cita creada: o no");
                         filterQueriesByDoctorName();
+                        panel.updateCalendar();
                     }
                 }, UserType.MEDICAL_EMPLOYEE);
                 updateCreateReadQuery.setModal(true);
                 updateCreateReadQuery.setVisible(true);
             }
         });
-        
+
+        JLabel BUTTON_LABEL = new JLabel("Socket");
+        rightPanel.add(BUTTON_LABEL);
+        BUTTON_LABEL.setBorder(new CircularBorder(ColorPallete.mainColor_Dark, 3, 84));
+        BUTTON_LABEL.setForeground(ColorPallete.mainColor_Dark);
+        BUTTON_LABEL.setFont(new Font("Segoe Print", Font.BOLD, 14));
+        BUTTON_LABEL.setHorizontalAlignment(SwingConstants.CENTER);
+        BUTTON_LABEL.setBounds(49, 41, 145, 66);
+        BUTTON_LABEL.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                frame.setCursor(Cursor.getDefaultCursor());
+            }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                FileHandler fileHandler = new FileHandler();
+                String filePath = "C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt";
+                new Thread(() -> {
+                    try {
+                        Server.main(null);
+                    } catch (Exception B) {
+                        B.printStackTrace();
+                    }
+                }).start();
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException B) {
+                    B.printStackTrace();
+                }
+
+                String hostname = "localhost";
+                int port = 12345;
+
+                try {
+                    fileHandler.sendFile(filePath, hostname, port);
+                    JOptionPane.showMessageDialog(frame, "Backup enviado", "Socket", JOptionPane.INFORMATION_MESSAGE);
+                } catch (IOException B) {
+                    B.printStackTrace();
+                    JOptionPane.showMessageDialog(frame, "Error de Backup", "Socket", JOptionPane.ERROR_MESSAGE);
+                }
+                frame.setCursor(Cursor.getDefaultCursor());
+            }
+
+        });
+        rightPanel.add(BUTTON_LABEL);
         rightPanel.add(btnCreateNewQuery);
 
         frame.revalidate();
@@ -271,7 +341,7 @@ public class DashboardPatient {
 
         for (Query query : queries) {
             Employee doctor = HospitalController.getInstance().findEmployeeById(query.getDoctorID());
-            if (doctor.getUserName().toLowerCase().contains(searchText)) {
+            if (doctor.getUserName().toLowerCase().contains(searchText) && query.getPatientID().equals(currentPatient.getId())) {
                 filteredQueries.add(query);
             }
         }
@@ -313,20 +383,9 @@ public class DashboardPatient {
         cardPanel.revalidate();
         cardPanel.repaint();
     }
-    
+
+	public JFrame getFrame() {
+		return frame;
+	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

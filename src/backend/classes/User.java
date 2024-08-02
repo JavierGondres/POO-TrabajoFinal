@@ -13,6 +13,7 @@ public abstract class User {
     protected Date birthday;
     protected float balance;
     protected File profilePicture;
+    protected Date registerDate;
 
     public User(String id, String userName, String lastName, String password, Date birthday, float balance, File profilePicture) {
         this.id = id;
@@ -22,6 +23,11 @@ public abstract class User {
         this.birthday = birthday;
         this.balance = balance;
         this.profilePicture = profilePicture;
+        this.registerDate = new Date(); 
+    }
+    
+    public Date getRegisterDate() {
+    	return registerDate;
     }
 
     public float getBalance() {
@@ -70,6 +76,10 @@ public abstract class User {
 
     public File getProfilePicture() {
         return profilePicture;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setProfilePicture(File profilePicture) {

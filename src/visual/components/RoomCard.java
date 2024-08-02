@@ -1,11 +1,19 @@
 package visual.components;
-import javax.swing.*;
-import java.awt.*;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.MouseListener;
 import java.net.URL;
 
-public class QueryCard extends RoundedPanel {
-    public QueryCard(String doctorName, String patientName, String available) {
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
+public class RoomCard extends RoundedPanel {
+	public RoomCard(String patientName, String available, String id) {
         super();
         setFocusable(true);
         setRequestFocusEnabled(true);
@@ -21,20 +29,20 @@ public class QueryCard extends RoundedPanel {
         this.setHoverEnabled(true);
         this.setLayout(null);
 
-        JLabel lblUserNameQuery = new JLabel(doctorName);
+        JLabel lblUserNameQuery = new JLabel(patientName);
         lblUserNameQuery.setBounds(170, 23, 201, 31);
         lblUserNameQuery.setHorizontalAlignment(SwingConstants.CENTER);
         Font newDoctorQueryFont = lblUserNameQuery.getFont().deriveFont(Font.BOLD, 14f);
         lblUserNameQuery.setFont(newDoctorQueryFont);
         this.add(lblUserNameQuery);
 
-        JLabel lblFecha = new JLabel(patientName);
+        JLabel lblFecha = new JLabel(available);
         lblFecha.setFont(lblFecha.getFont().deriveFont(14f));
         lblFecha.setBounds(170, 67, 201, 31);
         lblFecha.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(lblFecha);
 
-        JLabel lblpmpm = new JLabel(available);
+        JLabel lblpmpm = new JLabel(id);
         lblpmpm.setFont(lblpmpm.getFont().deriveFont(14f));
         lblpmpm.setBounds(170, 111, 201, 31);
         lblpmpm.setHorizontalAlignment(SwingConstants.CENTER);
@@ -45,7 +53,7 @@ public class QueryCard extends RoundedPanel {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 try {
-                    URL imageURL = getClass().getResource("/assets/images/cita-medica.png");
+                    URL imageURL = getClass().getResource("/assets/images/bedroom.png");
                     ImageIcon imageIcon = new ImageIcon(imageURL);
                     Image image = imageIcon.getImage();
                     g.drawImage(image, 0, 0, getWidth(), getHeight(), this);

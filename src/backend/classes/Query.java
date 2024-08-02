@@ -2,6 +2,7 @@ package backend.classes;
 
 import backend.enums.QueryTime;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -106,5 +107,30 @@ public class Query {
 
     public void setEndingTime(LocalTime endingTime) {
         this.endingTime = endingTime;
+    }
+
+    public String serializeToJson() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = (date != null) ? dateFormat.format(date) : "null";
+
+        // Convertir LocalTime a string en formato ISO
+        String formattedStartingTime = (startingTime != null) ? startingTime.toString() : "null";
+        String formattedEndingTime = (endingTime != null) ? endingTime.toString() : "null";
+
+        // Convertir enum a string
+        String queryTimeString = (queryTime != null) ? queryTime.name() : "null";
+
+        return "{"
+                + "Query: "
+                + "\"id\":\"" + id + "\","
+                + "\"patientID\":\"" + patientID + "\","
+                + "\"doctorID\":\"" + doctorID + "\","
+                + "\"fee\":" + fee + ","
+                + "\"date\":\"" + formattedDate + "\","
+                + "\"active\":" + active + ","
+                + "\"queryTime\":\"" + queryTimeString + "\","
+                + "\"startingTime\":\"" + formattedStartingTime + "\","
+                + "\"endingTime\":\"" + formattedEndingTime + "\""
+                + "}";
     }
 }

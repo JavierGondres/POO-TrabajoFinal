@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import backend.classes.Employee;
 import backend.classes.MedicalEmployee;
+import backend.classes.Patient;
 import backend.classes.User;
 import backend.controller.HospitalController;
 import backend.enums.Specialty;
@@ -31,12 +34,15 @@ public class RenderUsers extends JDialog {
     private UserSelectionCallback callback;
     private CardPressedCallback onPressedCardCallback;
     private UserType userTypeToRender;
+    private final JButton createUserBtn = new JButton("Agregar");
+    private final JButton deleteUserBtn = new JButton("Eliminar");
+    private boolean creationAvailable = false;
 
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                RenderUsers dialog = new RenderUsers(null, UserType.MEDICAL_EMPLOYEE, null, null);
+                RenderUsers dialog = new RenderUsers(null, UserType.MEDICAL_EMPLOYEE, null, null, false);
                 dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 dialog.setVisible(true);
             } catch (Exception e) {
@@ -45,13 +51,31 @@ public class RenderUsers extends JDialog {
         });
     }
 
-    public RenderUsers(ArrayList<? extends User> users, UserType userTypeToRender, UserSelectionCallback callback, CardPressedCallback onPressedCardCallback) {
+    public RenderUsers(ArrayList<? extends User> users, UserType userTypeToRender, UserSelectionCallback callback, CardPressedCallback onPressedCardCallback, boolean creationAvailable) {
         this.users = new ArrayList<>(users);
         this.callback = callback;
         this.onPressedCardCallback = onPressedCardCallback;
         this.userTypeToRender = userTypeToRender;
+        this.creationAvailable = creationAvailable;
         initializeUI();
         renderCards(userTypeToRender);
+
+        if (creationAvailable) {
+            createUserBtn.addActionListener(e -> {
+                UpdateCreateMedicalEmployee dialog = new UpdateCreateMedicalEmployee(this, null);
+                dialog.setModal(true);
+                dialog.setVisible(true);
+
+                MedicalEmployee newDoctor = dialog.getNewMedicalEmployee();
+                if (newDoctor != null) {
+                    addUser(newDoctor);
+                    HospitalController.getInstance().addEmployee(newDoctor);
+                }
+            });
+
+        } else {
+            createUserBtn.setVisible(false);
+        }
     }
 
     private void initializeUI() {
@@ -84,6 +108,11 @@ public class RenderUsers extends JDialog {
         if(onPressedCardCallback != null) {
         	okButton.setVisible(false);
         	cancelButton.setText("Cerrar");
+        }
+        if(creationAvailable == false) {
+        	createUserBtn.setVisible(false);
+            deleteUserBtn.setEnabled(false);
+        	deleteUserBtn.setVisible(false);
         }
     }
 
@@ -130,6 +159,12 @@ public class RenderUsers extends JDialog {
             }
             dispose();
         });
+        
+        deleteUserBtn.addActionListener(e -> deleteUser());
+        
+        buttonPane.add(deleteUserBtn);
+        
+        buttonPane.add(createUserBtn);
         buttonPane.add(okButton);
         getRootPane().setDefaultButton(okButton);
 
@@ -139,13 +174,51 @@ public class RenderUsers extends JDialog {
         return buttonPane;
     }
     
+    private void refreshCardsPanel() {
+        cardsPanel.removeAll();
+        renderCards(userTypeToRender);
+        cardsPanel.revalidate();
+        cardsPanel.repaint();
+    }
+
+    private void deleteUser() {
+        try {
+            if(selectedUser == null)
+                return;
+            
+            System.out.println(selectedUser.getUserName());
+            if(userTypeToRender == UserType.PATIENT)
+                HospitalController.getInstance().removePatient(selectedUser.getId());
+            else
+                HospitalController.getInstance().removeEmployee(selectedUser.getId());
+            
+            users.remove(selectedUser);
+            selectedUser = null;
+            selectedCard = null;
+            okButton.setEnabled(false);
+            deleteUserBtn.setEnabled(false);
+            
+            refreshCardsPanel();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void addUser(User user) {
+        users.add(user);
+        HospitalController.getInstance().addEmployee((Employee) user);
+        //HospitalController.getInstance().saveDataToFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt");
+        refreshCardsPanel();
+    }
+
     private void renderCards(UserType userTypeToRender) {
+        cardsPanel.removeAll();
         for (User user : users) {
             UserCard card = createCardForUser(user, userTypeToRender);
             card.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mousePressed(MouseEvent e) {
-                	if (onPressedCardCallback != null) {
+                    if (onPressedCardCallback != null) {
                         onPressedCardCallback.onCardPressed(user); 
                     }
                     selectCard(card, user);
@@ -155,6 +228,7 @@ public class RenderUsers extends JDialog {
         }
     }
 
+    
     private UserCard createCardForUser(User user, UserType userTypeToRender) {
         if(userTypeToRender == UserType.MEDICAL_EMPLOYEE) {
             String specialties = ((MedicalEmployee)user).getSpecialities().stream()
@@ -165,7 +239,7 @@ public class RenderUsers extends JDialog {
             return new UserCard("/assets/images/cita-medica.png", user.getUserName());
         }
     }
-    
+
     private String formatSpecialty(Specialty specialty) {
         return specialty.name().replace('_', ' ').toLowerCase();
     }
@@ -173,16 +247,19 @@ public class RenderUsers extends JDialog {
     private void selectCard(UserCard card, User user) {
         if (selectedCard != null) {
             selectedCard.setSelected(false);
+            deleteUserBtn.setSelected(false);
         }
         if (selectedCard != card) {
             card.setSelected(true);
             selectedCard = card;
             selectedUser = user;
             okButton.setEnabled(true);
+            deleteUserBtn.setEnabled(true);
         } else {
             selectedCard = null;
             selectedUser = null;
             okButton.setEnabled(false);
+            deleteUserBtn.setEnabled(false);
         }
     }
 }

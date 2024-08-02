@@ -1,5 +1,7 @@
 package visual;
 
+import visual.utils.ColorPallete;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -73,7 +75,7 @@ public class CustomizePatient extends JDialog {
         // Panel de menú vertical
         menuPanel = new JPanel();
         menuPanel.setPreferredSize(new Dimension(150, getHeight()));
-        menuPanel.setBackground(ColorPallete.Panel);
+        menuPanel.setBackground(ColorPallete.mainColor);
         menuPanel.setBorder(new CircularBorder(Color.BLACK, 1, 35));
         menuPanel.setLayout(new GridLayout(10, 1, 5, 5));
         contentPanel.add(menuPanel, BorderLayout.WEST);
@@ -314,11 +316,11 @@ public class CustomizePatient extends JDialog {
     }
 
     private void configureMenuButton(JButton button) {
-        button.setBackground(ColorPallete.Panel);
+        button.setBackground(ColorPallete.mainColor);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setFont(new Font("Tahoma", Font.BOLD, 12));
-        button.setBorder(new CircularBorder(ColorPallete.Panel, 1, 25));
+        button.setBorder(new CircularBorder(ColorPallete.mainColor, 1, 25));
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setMargin(new Insets(10, 15, 10, 15));
         button.addActionListener(new ActionListener() {

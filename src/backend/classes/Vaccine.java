@@ -54,4 +54,15 @@ public class Vaccine {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String serializeToJson() {
+        return "{"
+                + "Vaccine: "
+                + "\"id\":\"" + id + "\","
+                + "\"name\":\"" + name + "\","
+                + "\"diseaseId\":\"" + diseaseId + "\","
+                + "\"minAge\":" + minAge + ","
+                + "\"maxAge\":" + maxAge
+                + "}";
+    }
 }

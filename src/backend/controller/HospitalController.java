@@ -3,15 +3,16 @@ package backend.controller;
 import backend.classes.*;
 import backend.classes.Record;
 import backend.enums.*;
-import backend.utils.IdGenerator;
 
-import java.io.File;
+import java.io.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
+
+import static backend.enums.AccessType.ALTO;
 
 public class HospitalController {
     private ArrayList<Employee> employees;
@@ -26,15 +27,8 @@ public class HospitalController {
     private Specialty specialty;
     private AccessType access;
     private Patient currentPatient;
-
-    public MedicalEmployee getCurrentMedicalEmployee() {
-        return currentMedicalEmployee;
-    }
-
-    public void setCurrentMedicalEmployee(MedicalEmployee currentMedicalEmployee) {
-        this.currentMedicalEmployee = currentMedicalEmployee;
-    }
-
+    private String currentUserId;
+    private AdministrativeEmployee currentAdminEmployee;
     private MedicalEmployee currentMedicalEmployee;
     private static HospitalController instance;
 
@@ -46,11 +40,17 @@ public class HospitalController {
         this.records = new HashMap<>();
         this.vaccines = new ArrayList<>();
         this.diseases = new ArrayList<>();
+
+        loadDataFromFile("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\src\\backend\\GeneralFile.txt");
+
         this.currentPatient = new Patient("999", "Javier Emilio", "Gondres", "123456", new Date(), 1000, null, 100, 160);
-        this.currentMedicalEmployee = new MedicalEmployee("1", "Jane", "Doe", "1234", new Date(),
-                1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\AdministrativeEmployeeFile.txt"), QueryTime.THIRTY_MINUTES, 200);
+        this.currentMedicalEmployee = new MedicalEmployee("1", "Jane", "Doe", "123456", new Date(), 1000, new ArrayList<Specialty>(), LocalTime.of(9, 0), LocalTime.of(12, 0), new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"), QueryTime.THIRTY_MINUTES, 200);
+        this.currentAdminEmployee = new AdministrativeEmployee("3", "Isaac", "Leo", "123456", new Date(), 1000, LocalTime.of(8, 0), LocalTime.of(16, 0), ALTO, new File("C:\\Users\\Scarlet\\OneDrive\\Documentos\\Java Proyects\\POO-TrabajoFinal\\GeneralFile.txt"));
+        this.employees.add(currentAdminEmployee);
         this.patients.add(currentPatient);
         this.employees.add(currentMedicalEmployee);
+
+        createQuery("hola", "999", "1", 5F, new Date(), null, LocalTime.NOON, LocalTime.MIDNIGHT);
     }
 
     public static HospitalController getInstance() {
@@ -59,7 +59,68 @@ public class HospitalController {
         }
         return instance;
     }
+    
+    public String loginUser(String username, String password) {
+    	for(Patient p: patients) {
+    		if(p.getUserName().equals(username) && p.getPassword().equals(password)) {
+    			setAccessType(AccessType.BAJO);
+    			currentUserId = p.getId();
+    			currentPatient = p;
+    			return currentUserId;
+    		}
+    	}
+    	for(Employee e: employees) {
+    		if(e.getUserName().equals(username) && e.getPassword().equals(password)) {
+    			if(e instanceof MedicalEmployee) {
+                    setAccessType(AccessType.MEDIO);
+                    setCurrentMedicalEmployee((MedicalEmployee) e);
+                }
+    			else {
+                    setAccessType(ALTO);
+                    setCurrentAdminEmployee((AdministrativeEmployee) e);
+                }
+                currentUserId = e.getId();
+    			return currentUserId;
+    		}
+    	}
+    	return null;
+    }
 
+    public AdministrativeEmployee getCurrentAdminEmployee() {
+        return currentAdminEmployee;
+    }
+
+    public void setCurrentAdminEmployee(AdministrativeEmployee currentAdminEmployee) {
+        this.currentAdminEmployee = currentAdminEmployee;
+    }
+
+    public MedicalEmployee getCurrentMedicalEmployee() {
+        return currentMedicalEmployee;
+    }
+
+    public void setCurrentMedicalEmployee(MedicalEmployee currentMedicalEmployee) {
+        this.currentMedicalEmployee = currentMedicalEmployee;
+    }
+
+
+    public User getCurrentUser() {
+    	return findUserById(currentUserId);
+    }
+
+    public User findUserById(String Id) {
+    	for(Patient p: patients) {
+    		if(p.getId().equals(Id)) {
+    			return p;
+    		}
+    	}
+    	for(Employee e: employees) {
+    		if(e.getId().equals(Id)) {
+    			return e; 
+    		}
+    	}
+    	return null;
+    }
+    
     public void addEmployee(Employee employee) {
         this.employees.add(employee);
     }
@@ -88,14 +149,25 @@ public class HospitalController {
         this.diseases.add(disease);
     }
 
-    public void removeEmployee(Employee employee) {
-        this.employees.remove(employee);
+    public void removeEmployee(String id) throws IllegalArgumentException {
+        for (Employee employee : employees) {
+            if (employee.getId().equals(id)) {
+                employees.remove(employee);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Employee not found with ID: " + id);
     }
 
-    public void removePatient(Patient patient) {
-        this.patients.remove(patient);
+    public void removePatient(String id) throws IllegalArgumentException {
+        for (Patient patient : patients) {
+            if (patient.getId().equals(id)) {
+                patients.remove(patient);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Patient not found with ID: " + id);
     }
-
     public void removeRoom(Room room) {
         this.rooms.remove(room);
     }
@@ -431,4 +503,130 @@ public class HospitalController {
         existingQuery.setStartingTime(startingTime);
         existingQuery.setEndingTime(endingTime);
     }
+    
+    public void updateRoom(Room room) {
+    	Room existingRom = findRoomById(room.getId());
+        
+        if (existingRom == null) {
+            throw new IllegalArgumentException("No se encontro la habitacion con el ID: " + room.getId());
+        }
+        
+        existingRom.setDate(room.getDate());
+        existingRom.setPatientID(room.getPatientID());
+        existingRom.setDoctorID(room.getDoctorID());
+        existingRom.setAvailable(room.isAvailable());
+    }
+
+    public String serializeToJson() {
+
+        String employeesJson = employees.stream()
+                .map(Employee::serializeToJson)
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String patientsJson = patients.stream()
+                .map(Patient::serializeToJson) // Necesitarás implementar esto en la clase Patient
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String roomsJson = rooms.stream()
+                .map(Room::serializeToJson) // Necesitarás implementar esto en la clase Room
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String queriesJson = queries.stream()
+                .map(Query::serializeToJson) // Necesitarás implementar esto en la clase Query
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String recordsJson = records.entrySet().stream()
+                .map(entry -> "{\"patientId\":\"" + entry.getKey() + "\", \"record\":" + entry.getValue().serializeToJson() + "}") // Necesitarás implementar esto en la clase Record
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String vaccinesJson = vaccines.stream()
+                .map(Vaccine::serializeToJson) // Necesitarás implementar esto en la clase Vaccine
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String diseasesJson = diseases.stream()
+                .map(Disease::serializeToJson) // Necesitarás implementar esto en la clase Disease
+                .collect(Collectors.joining(",", "[", "]"));
+
+        return "{"
+                + "\"Employees\":" + employeesJson + ","
+                + "\"Patients\":" + patientsJson + ","
+                + "\"Rooms\":" + roomsJson + ","
+                + "\"Queries\":" + queriesJson + ","
+                + "\"Records\":" + recordsJson + ","
+                + "\"Vaccines\":" + vaccinesJson + ","
+                + "\"Diseases\":" + diseasesJson + ","
+                + "\"Priority\":\"" + priority + "\","
+                + "\"Genre\":\"" + genre + "\","
+                + "\"Specialty\":\"" + specialty + "\","
+                + "\"AccessType\":\"" + access + "\","
+                + "\"CurrentPatient\":" + currentPatient.serializeToJson() + ","
+                + "\"CurrentMedicalEmployee\":" + currentMedicalEmployee.serializeToJson()
+                + "}";
+    }
+
+    public void loadPatientsFromFile(String filePath) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                Patient patient = Patient.deserializeFromJson(line);
+                if (patient != null) {
+                    patients.add(patient);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadMedicalEmployee(String filePath) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                MedicalEmployee medicalEmployee = MedicalEmployee.deserializeFromJson(line);
+                if (medicalEmployee != null) {
+                    employees.add(medicalEmployee);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveDataToFile(String filePath) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+            // Guardar médicos
+            for (MedicalEmployee employee : getMedicalEmployees()) {
+                writer.println(employee.serializeToJson());
+            }
+            // Guardar pacientes
+            for (Patient patient : getPatients()) {
+                writer.println(patient.serializeToJson());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadDataFromFile(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+
+                MedicalEmployee medicalEmployee = MedicalEmployee.deserializeFromJson(line);
+                if (medicalEmployee != null) {
+                    employees.add(medicalEmployee);
+                }
+
+                Patient patient = Patient.deserializeFromJson(line);
+                if (patient != null) {
+                    patients.add(patient);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
